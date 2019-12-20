@@ -26,7 +26,7 @@
                 android:layout_weight="4"/>
 
             <TextView
-                android:id="@+id/countDownTimer"
+                android:id="@+id/stopwatch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00"
@@ -44,21 +44,27 @@
                 android:id="@+id/Image1"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image2"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image3"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
 
@@ -73,21 +79,27 @@
                 android:id="@+id/Image4"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image5"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image6"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
 
@@ -102,21 +114,27 @@
                 android:id="@+id/Image7"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image8"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image9"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
 
@@ -131,28 +149,57 @@
                 android:id="@+id/Image10"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image11"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
             <ImageButton
                 android:id="@+id/Image12"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:src="@drawable/pic0"
+                android:src="@drawable/code"
+                android:scaleType="fitCenter"
+                android:background="#00000000"
                 android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"/>
-
         </LinearLayout>
 
-
+        <Button
+            android:id="@+id/resetBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/pause"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pause"
+                android:onClick="onClickStop"
+                android:layout_weight="1"
+                />
+            <Button
+                android:id="@+id/resume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Resume"
+                android:onClick="onClickStart"
+                android:layout_weight="1"
+                />
+        </LinearLayout>
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
