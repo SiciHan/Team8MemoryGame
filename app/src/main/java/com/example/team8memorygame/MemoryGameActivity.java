@@ -2,6 +2,7 @@ package com.example.team8memorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -20,14 +21,18 @@ public class MemoryGameActivity extends AppCompatActivity {
     private long mTimeLeftInMilliseconds = 180000;*/
     TextView countDownTimer;
     int clicked = 0;
-    boolean turnOver = false;
+    boolean faceUp = false;
     int lastClicked = -1;
+    int matched = 0;
     //Number of seconds displayed on the stopwatch.
     private int seconds = 0;
     //Is the stopwatch running?
     private boolean running=true;//once the activity starts, the timer will start
     private boolean wasRunning;
+    ArrayList<Integer> images=null;
     ImageButton[] buttons=null;
+    ArrayList<String> files = null;
+    TextView picMatch = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,93 +46,11 @@ public class MemoryGameActivity extends AppCompatActivity {
         runTimer();
         //countDownTimer = (TextView)findViewById(R.id.countDownTimer);
 
-        final ArrayList<Integer> images = new ArrayList<>();
-        images.add(R.drawable.camel);
-        images.add(R.drawable.fox);
-        images.add(R.drawable.koala);
-        images.add(R.drawable.lion);
-        images.add(R.drawable.monkey);
-        images.add(R.drawable.wolf);
-        images.add(R.drawable.camel);
-        images.add(R.drawable.fox);
-        images.add(R.drawable.koala);
-        images.add(R.drawable.lion);
-        images.add(R.drawable.monkey);
-        images.add(R.drawable.wolf);
+        initUI();
 
-        buttons = new ImageButton[]{
-                findViewById(R.id.Image1),
-                findViewById(R.id.Image2),
-                findViewById(R.id.Image3),
-                findViewById(R.id.Image4),
-                findViewById(R.id.Image5),
-                findViewById(R.id.Image6),
-                findViewById(R.id.Image7),
-                findViewById(R.id.Image8),
-                findViewById(R.id.Image9),
-                findViewById(R.id.Image10),
-                findViewById(R.id.Image11),
-                findViewById(R.id.Image12)
-        };
+        picMatch = findViewById(R.id.picmatches);
 
-        Collections.shuffle(images);
-        for (int i = 0; i < images.size(); i++) {
-            System.out.println("Button: " + (i+1) + ", Tag: " + images.get(i));
-        }
-
-        for (int i=0;i<buttons.length;i++){
-            final int finalI = i;
-            buttons[i].setTag("cardBack");
-            buttons[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    System.out.println("Tag: " + buttons[finalI].getTag());
-                    String imageName = (String) buttons[finalI].getTag();
-                    if (imageName.equals("cardBack") && !turnOver){
-                        buttons[finalI].setImageResource(images.get(finalI));
-                        buttons[finalI].setTag(images.get(finalI).toString());
-                        if (clicked == 0) {
-                            lastClicked = finalI;
-                            System.out.println("Lastclicked tag: " + lastClicked + ", i: " + finalI);
-                        }
-                        System.out.println("Flipped the card, setting tag to: " + buttons[finalI].getTag().toString());
-                        clicked++;
-                    } else if (!imageName.contains("cardBack")){
-                        buttons[finalI].setImageResource(R.drawable.code);
-                        buttons[finalI].setTag("cardBack");
-                        System.out.println("WHY YOU CLICK ME");
-                        clicked--;
-                    }
-                    if (clicked == 2){
-                        System.out.println("Max clicked reached");
-                        turnOver = true;
-                        if (buttons[finalI].getTag().toString().equalsIgnoreCase(buttons[lastClicked].getTag().toString())){
-                            buttons[finalI].setClickable(false);
-                            buttons[lastClicked].setClickable(false);
-                            turnOver = false;
-                            clicked = 0;
-                            //if the matches equals 6
-                            //onClickPause();
-                        } else {
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    turnOver = false;
-                                    clicked = 0;
-                                    buttons[finalI].setImageResource(R.drawable.code);
-                                    buttons[finalI].setTag("cardBack");
-                                    buttons[lastClicked].setImageResource(R.drawable.code);
-                                    buttons[lastClicked].setTag("cardBack");
-                                }
-                            }, 1000);
-                        }
-                    } else if (clicked == 0){
-                        turnOver = false;
-                    }
-                }
-            });
-        }
+        memoryLogic();
 
         Button reset = findViewById(R.id.resetBtn);
         reset.setOnClickListener(new View.OnClickListener() {
@@ -233,5 +156,122 @@ public class MemoryGameActivity extends AppCompatActivity {
                 handler.postDelayed(this, 1000);
             }
         });
+    }
+
+    protected void initUI(){
+        buttons = new ImageButton[]{
+                findViewById(R.id.Image1),
+                findViewById(R.id.Image2),
+                findViewById(R.id.Image3),
+                findViewById(R.id.Image4),
+                findViewById(R.id.Image5),
+                findViewById(R.id.Image6),
+                findViewById(R.id.Image7),
+                findViewById(R.id.Image8),
+                findViewById(R.id.Image9),
+                findViewById(R.id.Image10),
+                findViewById(R.id.Image11),
+                findViewById(R.id.Image12)
+        };
+
+        //images list for testing until the 6 images are downloaded into the device from previous activity
+        images = new ArrayList<>();
+        images.add(R.drawable.camel);
+        images.add(R.drawable.fox);
+        images.add(R.drawable.koala);
+        images.add(R.drawable.lion);
+        images.add(R.drawable.monkey);
+        images.add(R.drawable.wolf);
+        images.add(R.drawable.camel);
+        images.add(R.drawable.fox);
+        images.add(R.drawable.koala);
+        images.add(R.drawable.lion);
+        images.add(R.drawable.monkey);
+        images.add(R.drawable.wolf);
+
+        Collections.shuffle(images);
+
+        files = new ArrayList<>();
+        files.add("image1.jpg");
+        files.add("image2.jpg");
+        files.add("image3.jpg");
+        files.add("image4.jpg");
+        files.add("image5.jpg");
+        files.add("image6.jpg");
+        files.add("image1.jpg");
+        files.add("image2.jpg");
+        files.add("image3.jpg");
+        files.add("image4.jpg");
+        files.add("image5.jpg");
+        files.add("image6.jpg");
+
+        Collections.shuffle(files);
+
+    }
+
+    protected void memoryLogic(){
+        for (int i=0;i<buttons.length;i++){
+            final int finalI = i;
+            buttons[i].setTag("cardBack");
+            buttons[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    System.out.println("Tag: " + buttons[finalI].getTag());
+                    String imageName = (String) buttons[finalI].getTag();
+                    if (imageName.equals("cardBack") && !faceUp){
+                        buttons[finalI].setImageResource(images.get(finalI));
+                        buttons[finalI].setTag(images.get(finalI).toString());
+                        //uncomment code below to use bitmap images downloaded from previous activity from the phone's internal storage
+                        /*buttons[finalI].setImageBitmap(BitmapFactory.decodeFile(getFilesDir()+"/"+files.get(finalI)));
+                        buttons[finalI].setTag(files.get(finalI));*/
+                        if (clicked == 0) {
+                            lastClicked = finalI;
+                            System.out.println("Lastclicked tag: " + lastClicked + ", i: " + finalI);
+                        }
+                        System.out.println("Flipped the card, setting tag to: " + buttons[finalI].getTag().toString());
+                        clicked++;
+                    }
+
+                    //The second criteria is to ensure only 2 cards are clicked and flipped. Any further clicks on other cards won't mistakenly trigger the handler
+                    if (clicked == 2 && !buttons[finalI].getTag().toString().equals("cardBack")){
+                        buttons[finalI].setClickable(false);
+                        faceUp = true;
+                        if (buttons[finalI].getTag().toString().equalsIgnoreCase(buttons[lastClicked].getTag().toString())){
+                            buttons[finalI].setClickable(false);
+                            buttons[lastClicked].setClickable(false);
+                            matched++;
+                            faceUp = false;
+                            clicked = 0;
+                            picMatch.setText(matched + "/6 matches");
+                            //if the matches equals 6
+                            //onClickPause();
+                            if(matched == 6){
+                                System.out.println("so smart, you matched 6 pairs in " + seconds + " seconds!");
+                                running = false;
+                            }
+                        } else {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    faceUp = false;
+                                    clicked = 0;
+                                    buttons[finalI].setImageResource(R.drawable.code);
+                                    buttons[finalI].setTag("cardBack");
+                                    buttons[lastClicked].setImageResource(R.drawable.code);
+                                    buttons[lastClicked].setTag("cardBack");
+                                    buttons[finalI].setClickable(true);
+                                    buttons[lastClicked].setClickable(true);
+                                }
+                            }, 1000);
+                        }
+                    } else if (clicked == 0){
+                        faceUp = false;
+                    } else if (clicked == 1){
+                        buttons[lastClicked].setClickable(false);
+                    }
+                }
+            });
+        }
     }
 }
