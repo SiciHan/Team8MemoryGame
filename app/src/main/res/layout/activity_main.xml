@@ -12,21 +12,17 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/BottomRow"
-        app:layout_constraintHeight_percent="0.1"
+        app:layout_constraintHeight_percent="0.2"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            style="@style/LinearHorizontalStyle"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/editText1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                style="@style/SearchUrlStyle"
                 android:ems="8"
                 android:hint="@string/hintUrl"
                 android:inputType="textUri"
@@ -34,11 +30,18 @@
 
             <Button
                 android:id="@+id/fetch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                style="@style/SearchUrlStyle"
                 android:text="@string/fetch" />
         </LinearLayout>
+
+        <LinearLayout style="@style/LinearHorizontalStyle">
+
+            <Button
+                android:id="@+id/MoveToGameBtn"
+                style="@style/SearchUrlStyle"
+                android:text="@string/moveToGameUI" />
+        </LinearLayout>
+
 
     </LinearLayout>
 
@@ -48,34 +51,11 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.9"
+        app:layout_constraintHeight_percent="0.8"
         app:layout_constraintTop_toBottomOf="@id/SearchImageLayout"
         tools:layout_constraintBottom_toBottomOf="parent">
 
-<!--        <LinearLayout-->
-<!--            android:id="@+id/LinearLayout1"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="1"-->
-<!--            android:orientation="horizontal">-->
 
-<!--            <EditText-->
-<!--                android:id="@+id/editText"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="4"-->
-<!--                android:ems="8"-->
-<!--                android:hint="Please enter url address"-->
-<!--                android:inputType="textUri"-->
-<!--                android:textSize="18sp" />-->
-
-<!--            <Button-->
-<!--                android:id="@+id/fetch"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:text="Fetch" />-->
-<!--        </LinearLayout>-->
 
         <LinearLayout
             android:id="@+id/linearLayout2"
@@ -84,22 +64,22 @@
             <ImageView
                 android:id="@+id/imageView1"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView2"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView3"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView4"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
         </LinearLayout>
 
         <LinearLayout
@@ -108,22 +88,22 @@
             <ImageView
                 android:id="@+id/imageView5"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView6"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView7"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView8"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
         </LinearLayout>
 
         <LinearLayout
@@ -132,22 +112,22 @@
             <ImageView
                 android:id="@+id/imageView9"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView10"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView11"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView12"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
         </LinearLayout>
 
         <LinearLayout
@@ -156,22 +136,22 @@
             <ImageView
                 android:id="@+id/imageView13"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView14"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView15"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView16"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
         </LinearLayout>
 
         <LinearLayout
@@ -180,22 +160,22 @@
             <ImageView
                 android:id="@+id/imageView17"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView18"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView19"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
 
             <ImageView
                 android:id="@+id/imageView20"
                 style="@style/imageStyle"
-                app:srcCompat="@drawable/camp" />
+                app:srcCompat="@drawable/pic0" />
         </LinearLayout>
 
         <LinearLayout

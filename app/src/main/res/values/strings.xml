@@ -2,4 +2,5 @@
     <string name="app_name">Team8MemoryGame</string>
     <string name="hintUrl">Please enter your url address</string>
     <string name="fetch">Fetch</string>
+    <string name="moveToGameUI">Click here to move to game</string>
 </resources>
