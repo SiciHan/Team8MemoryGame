@@ -2,13 +2,20 @@ package com.example.team8memorygame;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,12 +23,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
 public class MemoryGameActivity extends AppCompatActivity {
-
+    private GameSound gameSound;
+    int watchAdCount=1;
+    int scorepts=0;
     int clicked = 0;
     boolean faceUp = false;
     int lastClicked = -1;
@@ -40,6 +50,70 @@ public class MemoryGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory_game);
+
+        // Initialise gameSound
+        gameSound=new GameSound(this);
+        // do bind service
+        doBindService();
+        Intent music=new Intent();
+        music.setClass(this,MusicService.class);
+        startService(music);
+
+        Button resumeMusic=findViewById(R.id.musicResume);
+        resumeMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onResumeMusic();
+            }
+        });
+        Button pauseMusic=findViewById(R.id.musicPause);
+        pauseMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    mServ.pauseMusic();
+            }
+        });
+
+        // watch advertisement
+        Button btnAdv=findViewById(R.id.watchAdv);
+        btnAdv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mServ.pauseMusic();
+                Intent intent=new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+
+                File file=new File(getFilesDir()+"/videos/adv.mp4");
+                Uri uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.team8memorygame.provider",file);
+                intent.setDataAndType(uri,"video/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                if(watchAdCount<2){
+                    int pts=50;
+                    scorepts=scorepts+50;
+                    watchAdCount=2;
+                    // use part to add score pts to ur method
+                }
+                startActivity(intent);
+            }
+        });
+        //watch tut
+        Button btnWatchTut=findViewById(R.id.watchTut);
+        btnWatchTut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mServ.pauseMusic();
+                Intent intent=new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+
+                File file=new File(getFilesDir()+"/videos/demo.mp4");
+                Uri uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.team8memorygame.provider",file);
+                intent.setDataAndType(uri,"video/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+            }
+        });
+
+
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
             running = savedInstanceState.getBoolean("running");
@@ -339,5 +413,46 @@ public class MemoryGameActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    //MusicService
+    private boolean mIsBound=false;
+    private MusicService mServ;
+    private ServiceConnection sConn=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            mServ=((MusicService.ServiceBinder)binder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServ=null;
+        }
+    };
+
+    void doBindService(){
+        bindService(new Intent(this,MusicService.class),sConn, Context.BIND_AUTO_CREATE);
+        mIsBound=true;
+    }
+    void doUnbindService(){
+        if(mIsBound){
+            unbindService(sConn);
+            mIsBound=false;
+        }
+    }
+
+    protected void onResumeMusic(){
+        super.onResume();
+        if(mServ!=null){
+            mServ.resumeMusic();
+        }
+    }
+
+    protected void onDestroyMusic(){
+        super.onDestroy();
+        doUnbindService();
+        Intent music=new Intent();
+        music.setClass(this,MusicService.class);
+        stopService(music);
     }
 }
