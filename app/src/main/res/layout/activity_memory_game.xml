@@ -78,31 +78,16 @@
 
             <ImageButton
                 android:id="@+id/Image1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image2"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image3"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
 
         </LinearLayout>
         <LinearLayout
@@ -113,31 +98,16 @@
 
             <ImageButton
                 android:id="@+id/Image4"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image5"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image6"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
 
         </LinearLayout>
         <LinearLayout
@@ -148,31 +118,16 @@
 
             <ImageButton
                 android:id="@+id/Image7"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image8"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image9"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
 
         </LinearLayout>
         <LinearLayout
@@ -183,31 +138,16 @@
 
             <ImageButton
                 android:id="@+id/Image10"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image11"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image12"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/code"
-                android:scaleType="fitCenter"
-                android:background="#00000000"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
         </LinearLayout>
 
         <Button
