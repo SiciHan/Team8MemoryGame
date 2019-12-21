@@ -17,9 +17,6 @@ import java.util.Locale;
 
 public class MemoryGameActivity extends AppCompatActivity {
 
-/*    private CountDownTimer mCountDownTimer;
-    private long mTimeLeftInMilliseconds = 180000;*/
-    TextView countDownTimer;
     int clicked = 0;
     boolean faceUp = false;
     int lastClicked = -1;
@@ -44,57 +41,19 @@ public class MemoryGameActivity extends AppCompatActivity {
             wasRunning = savedInstanceState.getBoolean("wasRunning");
         }
         runTimer();
-        //countDownTimer = (TextView)findViewById(R.id.countDownTimer);
-
         initUI();
-
         picMatch = findViewById(R.id.picmatches);
-
         memoryLogic();
 
         Button reset = findViewById(R.id.resetBtn);
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                for (int i = 0; i < buttons.length; i++) {
-//                    buttons[i].setTag("cardBack");
-//                    buttons[i].setImageResource(R.drawable.code);
-//                    buttons[i].setClickable(true);
-//                }
-//                turnOver = false;
-//                clicked = 0;
-//                Collections.shuffle(images);
-//                mTimeLeftInMilliseconds = 180000;
-//                startTimer();
-//                updateCountDownText();
                 finish();
                 startActivity(getIntent());
             }
         });
     }
-
-    /*protected void startTimer(){
-        mCountDownTimer = new CountDownTimer(mTimeLeftInMilliseconds,1000) {
-            @Override
-            public void onTick(long l) {
-                mTimeLeftInMilliseconds = l;
-                updateCountDownText();
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        }.start();
-    }
-
-    void updateCountDownText(){
-        int minutes = (int)(mTimeLeftInMilliseconds / 1000) / 60;
-        int seconds = (int)(mTimeLeftInMilliseconds / 1000) % 60;
-
-        String timeLeft = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
-        countDownTimer.setText(timeLeft);
-    }*/
 
     @Override
     protected void onPause() {
@@ -124,6 +83,11 @@ public class MemoryGameActivity extends AppCompatActivity {
                 button.setClickable(true);
             }
         }
+        view.setClickable(false);
+        view.setVisibility(View.GONE);
+        Button pauseBtn=(Button)findViewById(R.id.pause);
+        pauseBtn.setClickable(true);
+        pauseBtn.setVisibility(View.VISIBLE);
     }
     //Stop the stopwatch running when the pause button is clicked.
     public void onClickStop(View view) {
@@ -134,6 +98,11 @@ public class MemoryGameActivity extends AppCompatActivity {
                 button.setClickable(false);
             }
         }
+        view.setClickable(false);
+        view.setVisibility(View.GONE);
+        Button resumeBtn=(Button)findViewById(R.id.resume);
+        resumeBtn.setClickable(true);
+        resumeBtn.setVisibility(View.VISIBLE);
         //grey out the pause button
         //enable to the resume button
     }
