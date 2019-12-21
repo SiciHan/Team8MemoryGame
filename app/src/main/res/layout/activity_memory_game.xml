@@ -21,12 +21,12 @@
                 android:id="@+id/picmatches"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3/6 matches"
+                android:text="0/6 matches"
                 android:textSize="30dp"
                 android:layout_weight="4"/>
 
             <TextView
-                android:id="@+id/countDownTimer"
+                android:id="@+id/stopwatch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00"
@@ -42,25 +42,16 @@
 
             <ImageButton
                 android:id="@+id/Image1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image2"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image3"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
 
         </LinearLayout>
         <LinearLayout
@@ -71,25 +62,16 @@
 
             <ImageButton
                 android:id="@+id/Image4"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image5"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image6"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
 
         </LinearLayout>
         <LinearLayout
@@ -100,25 +82,16 @@
 
             <ImageButton
                 android:id="@+id/Image7"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image8"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image9"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
 
         </LinearLayout>
         <LinearLayout
@@ -129,30 +102,46 @@
 
             <ImageButton
                 android:id="@+id/Image10"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image11"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
             <ImageButton
                 android:id="@+id/Image12"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-
-                android:layout_weight="1"
-                android:layout_marginHorizontal="10dp"/>
-
+                style="@style/gameImageStyle"
+                android:src="@drawable/code" />
         </LinearLayout>
 
-
+        <Button
+            android:id="@+id/resetBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <Button
+                android:id="@+id/pause"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pause"
+                android:onClick="onClickStop"
+                android:layout_weight="1"
+                android:layout_above="@id/resume"
+                />
+            <Button
+                android:id="@+id/resume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Resume"
+                android:onClick="onClickStart"
+                android:layout_weight="1"
+                android:visibility="gone"
+                />
+        </RelativeLayout>
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
