@@ -1,15 +1,19 @@
 package com.example.team8memorygame;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +53,8 @@ public class MemoryGameActivity extends AppCompatActivity {
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(MemoryGameActivity.this, "When life gets hard, reset" , Toast.LENGTH_SHORT).show();
+
                 finish();
                 startActivity(getIntent());
             }
@@ -217,6 +223,15 @@ public class MemoryGameActivity extends AppCompatActivity {
                             if(matched == 6){
                                 System.out.println("so smart, you matched 6 pairs in " + seconds + " seconds!");
                                 running = false;
+                                // without the handler below and if we just run resultDialog directly,
+                                // there seems to be a noticeable lag when making the final matching pair
+                                Handler handler = new Handler();
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        resultDialog();
+                                    }
+                                });
                             }
                         } else {
                             Handler handler = new Handler();
@@ -242,5 +257,72 @@ public class MemoryGameActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void resultDialog(){
+        // create an alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // set the custom layout
+        // pass null as the parent view because it's going in the dialog layout
+        View resultView = getLayoutInflater().inflate(R.layout.result_dialog,null);
+        builder.setView(resultView);
+
+        // prevents user from dismissing the dialog
+        builder.setCancelable(false);
+
+        // gets the timeScore TextView and sets it according to the seconds int (which has to be parsed into a String or else TextView breaks)
+        TextView timeScore = resultView.findViewById(R.id.timeScore);
+        System.out.println(timeScore.getText());
+        timeScore.setText(String.valueOf(seconds));
+
+        final EditText playerName = resultView.findViewById(R.id.playerName);
+        System.out.println("current name: " + playerName.getText());
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Left empty as this will be overriden below for positive button
+                // validation logic goes below
+            }
+        });
+
+        builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(MemoryGameActivity.this, "It's okay, we all give up now and then.." , Toast.LENGTH_SHORT).show();
+                finish();
+                startActivity(getIntent());
+            }
+        });
+
+        // creates and shows the result dialog
+        final AlertDialog resultDialog = builder.create();
+        resultDialog.show();
+
+        // Overrides the setPositiveButton behaviour. Instead of dismissing it immediately, it goes through a check for EditText's playerName
+        resultDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Boolean isError = false;
+
+                //checking for input name
+                String name = playerName.getText().toString().trim();
+
+                if(name.isEmpty()){
+                    isError = true;
+                    playerName.setError("No seriously, what's your name?");
+                }
+
+                // if no errors, this block below will save all the necessary details into Shared Preference / Send to database
+                if(!isError){
+                    Toast.makeText(MemoryGameActivity.this, "Saved! Thanks for playing, " + playerName.getText().toString(), Toast.LENGTH_SHORT).show();
+//                    resultDialog.dismiss();
+                    finish();
+                    startActivity(getIntent());
+                }
+
+            }
+        });
     }
 }
