@@ -70,7 +70,7 @@ public class MemoryGameActivity extends AppCompatActivity {
         pauseMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    mServ.pauseMusic();
+                    onPauseMusic();
             }
         });
 
@@ -271,6 +271,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                     if (imageName.equals("cardBack") && !faceUp){
                         buttons[finalI].setImageResource(images.get(finalI));
                         buttons[finalI].setTag(images.get(finalI).toString());
+
                         //uncomment code below to use bitmap images downloaded from previous activity from the phone's internal storage
                         /*buttons[finalI].setImageBitmap(BitmapFactory.decodeFile(getFilesDir()+"/"+files.get(finalI)));
                         buttons[finalI].setTag(files.get(finalI));*/
@@ -286,10 +287,12 @@ public class MemoryGameActivity extends AppCompatActivity {
                     if (clicked == 2 && !buttons[finalI].getTag().toString().equals("cardBack")){
                         buttons[finalI].setClickable(false);
                         faceUp = true;
+
                         if (buttons[finalI].getTag().toString().equalsIgnoreCase(buttons[lastClicked].getTag().toString())){
                             buttons[finalI].setClickable(false);
                             buttons[lastClicked].setClickable(false);
                             matched++;
+
                             faceUp = false;
                             clicked = 0;
                             picMatch.setText(matched + "/6 matches");
@@ -446,6 +449,10 @@ public class MemoryGameActivity extends AppCompatActivity {
         if(mServ!=null){
             mServ.resumeMusic();
         }
+    }
+    protected void onPauseMusic(){
+        super.onPause();
+        mServ.pauseMusic();
     }
 
     protected void onDestroyMusic(){
