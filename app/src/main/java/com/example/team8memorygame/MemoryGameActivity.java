@@ -292,6 +292,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                             buttons[finalI].setClickable(false);
                             buttons[lastClicked].setClickable(false);
                             matched++;
+                            gameSound.playCorrectSound();
 
                             faceUp = false;
                             clicked = 0;
@@ -312,6 +313,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                                 });
                             }
                         } else {
+                            gameSound.playWrongSound();
                             Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
