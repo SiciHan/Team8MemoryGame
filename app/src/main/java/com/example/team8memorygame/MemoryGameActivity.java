@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -279,6 +280,12 @@ public class MemoryGameActivity extends AppCompatActivity {
         final EditText playerName = resultView.findViewById(R.id.playerName);
         System.out.println("current name: " + playerName.getText());
 
+        // sets the player's name in result page to whatever name's in the shared preference
+        SharedPreferences playerPref =  getSharedPreferences("player", MODE_PRIVATE);
+        if(playerPref.contains("name")){
+            playerName.setText(playerPref.getString("name",null));
+        }
+
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -316,8 +323,16 @@ public class MemoryGameActivity extends AppCompatActivity {
 
                 // if no errors, this block below will save all the necessary details into Shared Preference / Send to database
                 if(!isError){
-                    Toast.makeText(MemoryGameActivity.this, "Saved! Thanks for playing, " + playerName.getText().toString(), Toast.LENGTH_SHORT).show();
 //                    resultDialog.dismiss();
+                    SharedPreferences playerPref =  getSharedPreferences("player", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = playerPref.edit();
+                    editor.putString("name", name);
+                    editor.putInt("score", seconds);
+                    // Consider using `apply()` instead; `commit` writes its data to persistent storage immediately,
+                    // whereas `apply` will handle it in the background
+                    editor.apply();
+
+                    Toast.makeText(MemoryGameActivity.this, "Saved! Thanks for playing, " + playerName.getText().toString(), Toast.LENGTH_SHORT).show();
                     finish();
                     startActivity(getIntent());
                 }
