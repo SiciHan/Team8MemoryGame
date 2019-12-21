@@ -35,7 +35,20 @@
         </LinearLayout>
 
         <LinearLayout style="@style/LinearHorizontalStyle">
+            <Button
+                android:id="@+id/musicPause0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="pausemusic"
+                android:textSize="10sp" />
 
+            <Button
+                android:id="@+id/musicResume0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ResumeMusic" />
             <Button
                 android:id="@+id/MoveToGameBtn"
                 style="@style/SearchUrlStyle"
