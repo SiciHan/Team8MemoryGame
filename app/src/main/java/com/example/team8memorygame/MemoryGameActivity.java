@@ -113,6 +113,7 @@ public class MemoryGameActivity extends AppCompatActivity
         Button pauseBtn=(Button)findViewById(R.id.pause);
         pauseBtn.setClickable(true);
         pauseBtn.setVisibility(View.VISIBLE);
+        gameSound.playClickSound();
     }
     //Stop the stopwatch running when the pause button is clicked.
     public void onClickStop(View view) {
@@ -128,6 +129,7 @@ public class MemoryGameActivity extends AppCompatActivity
         Button resumeBtn=(Button)findViewById(R.id.resume);
         resumeBtn.setClickable(true);
         resumeBtn.setVisibility(View.VISIBLE);
+        gameSound.playClickSound();
         //grey out the pause button
         //enable to the resume button
     }
@@ -319,12 +321,14 @@ public class MemoryGameActivity extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 // Left empty as this will be overriden below for positive button
                 // validation logic goes below
+                gameSound.playClickSound();
             }
         });
 
         builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                gameSound.playClickSound();
                 Toast.makeText(MemoryGameActivity.this, "It's okay, we all give up now and then.." , Toast.LENGTH_SHORT).show();
                 reset();
             }
@@ -465,16 +469,20 @@ public class MemoryGameActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.resetBtn:
+                gameSound.playClickSound();
                 reset();
                 Toast.makeText(MemoryGameActivity.this, "When life gets hard, reset" , Toast.LENGTH_SHORT).show();
                 break;
             case R.id.musicPause:
+                gameSound.playClickSound();
                 onPauseMusic();
                 break;
             case R.id.musicResume:
+                gameSound.playClickSound();
                 onResumeMusic();
                 break;
             case R.id.watchAdv:
+                gameSound.playClickSound();
                 mServ.pauseMusic();
                 Intent intent=new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
@@ -492,6 +500,7 @@ public class MemoryGameActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             case R.id.watchTut:
+                gameSound.playClickSound();
                 mServ.pauseMusic();
                 intent=new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
