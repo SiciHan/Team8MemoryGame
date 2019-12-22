@@ -3,17 +3,14 @@ package com.example.team8memorygame;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.Menu;
@@ -24,19 +21,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.team8memorygame.Model.Command;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Locale;
 
 public class MemoryGameActivity extends AppCompatActivity
-    implements AsyncToServer.IServerResponse{
+    implements AsyncToServer.IServerResponse, AsyncToServerMultiplayer.IServerResponse{
     private GameSound gameSound;
     int watchAdCount=1;
     int advPoints;
@@ -55,12 +48,22 @@ public class MemoryGameActivity extends AppCompatActivity
     TextView picMatch = null;
     int score = 0;
     int tries = 0;
+    //variable needed for multiplayer parts
+    boolean enablePause=true;
+    CommandForMultiplayers cmd;
+    JSONObject jsonObject=new JSONObject();
+    String playername=null;
+    boolean hasWinner=false;
+    boolean isWinner=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory_game);
-
+        //get the intent from PlayerModeActivity, images in byte[] are also passed through intent
+        enablePause=getIntent().getBooleanExtra("enablePause",true);
+        playername=(String)getIntent().getSerializableExtra("playername");
+        gameWinnerListener();
         // Initialise gameSound
         gameSound=new GameSound(this);
          //do bind service
@@ -203,6 +206,10 @@ public class MemoryGameActivity extends AppCompatActivity
 
         Collections.shuffle(files);
 
+        if(enablePause==false){
+            findViewById(R.id.pause).setVisibility(View.GONE);
+            findViewById(R.id.resume).setVisibility(View.GONE);
+        }
     }
 
     protected void memoryLogic(){
@@ -243,9 +250,9 @@ public class MemoryGameActivity extends AppCompatActivity
                             faceUp = false;
                             clicked = 0;
                             picMatch.setText(matched + "/6 matches");
-                            //if the matches equals 6
-                            //onClickPause();
-                            if(matched == 6){
+
+                            //if the matches equals 6 and it is the single player mode
+                            if(matched == 6 && enablePause==true){
                                 gameSound.playWinSound();
                                 System.out.println("so smart, you matched 6 pairs in " + seconds + " seconds!");
                                 running = false;
@@ -259,6 +266,10 @@ public class MemoryGameActivity extends AppCompatActivity
                                         resultDialog();
                                     }
                                 });
+                            }
+                            //if the matches equals 6 and it is the 2-player mode
+                            else if(matched==6 && enablePause==false){
+                                FinishGame();
                             }
                         } else {
                             gameSound.playWrongSound();
@@ -543,6 +554,92 @@ public class MemoryGameActivity extends AppCompatActivity
         }catch (Exception e){
             e.printStackTrace();
         }
+
+    }
+    public void FinishGame(){
+        //once click on finish
+        //need to set the winner in the server
+
+        try{
+            jsonObject.put("name",playername);//this playername is ""
+            System.out.println("start game"+jsonObject.toString());//
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        cmd=new CommandForMultiplayers(this,"finishGame","http://10.0.2.2:65332/Home/FinishGame",jsonObject);
+        new AsyncToServerMultiplayer().execute(cmd);
+    }
+    public void gameWinnerListener(){
+        //constantly check if the winner is set, if set display message
+        try{
+            jsonObject.put("name",playername);//this playername is ""
+            System.out.println("start game"+jsonObject.toString());//
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        final Handler handler=new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                cmd = new CommandForMultiplayers(MemoryGameActivity.this, "GetWinner", "http://10.0.2.2:65332/Home/GetWinner", jsonObject);
+                new AsyncToServerMultiplayer().execute(cmd);
+                if (hasWinner == false) {
+                    handler.postDelayed(this, 1000);
+                }else{
+                    Intent intent=new Intent(MemoryGameActivity.this,ResultActivity.class);
+                    intent.putExtra("isWinner",isWinner);
+                    startActivity(intent);
+                    handler.removeCallbacks(this);
+                }
+            }
+        });
+
+    }
+    @Override
+    public void onServerResponse(JSONObject jsonObject){
+        if(jsonObject==null){
+            return;
+        }
+
+        String context="";
+        try{
+            context=(String) jsonObject.get("context");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(context.equals("finishGame")){
+            //set has winner to true??? no need
+
+        }
+        else if (context.equals("GetWinner")){
+            //set the isWinner=false/true
+            //set has winner to false/true
+            String status="";
+            String winner="";
+            try{
+                status=(String)jsonObject.get("status");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            try{
+                winner=(String)jsonObject.get("name");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            if(winner.equals("")){
+                hasWinner=false;
+            }
+            else{
+                hasWinner=true;
+            }
+            if(winner.equals(playername)){
+                isWinner=true;
+            }else{
+                isWinner=false;
+            }
+
+        }
+
 
     }
 }

@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity{
         imageView18 = findViewById(R.id.imageView18);
         imageView19 = findViewById(R.id.imageView19);
         imageView20 = findViewById(R.id.imageView20);
-        intent = new Intent(MainActivity.this, MemoryGameActivity.class);
+        intent = new Intent(MainActivity.this, PlayerModeActivity.class);
         fetch = findViewById(R.id.fetch);
         fetch.setOnClickListener(new View.OnClickListener() {
             @Override
