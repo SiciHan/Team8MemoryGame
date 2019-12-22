@@ -32,8 +32,8 @@
                 android:text="00:00"
                 android:textSize="30dp"
                 android:layout_weight="1"/>
-
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,13 +114,7 @@
                 android:src="@drawable/code" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/resetBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reset"
-            />
-        <RelativeLayout
+       <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >

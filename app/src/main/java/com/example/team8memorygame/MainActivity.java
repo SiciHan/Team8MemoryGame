@@ -2,12 +2,15 @@ package com.example.team8memorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,10 +26,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,11 +41,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
-    implements AsyncToServer.IServerResponse{
-Button btn1;
-    Button fetch;
-    ProgressBar progressBar;
-    MyTask mTask;
+        implements AsyncToServer.IServerResponse {
+    Button btn1;
+
+    private GameSound gameSound;
     ImageView imageView1;
     ImageView imageView2;
     ImageView imageView3;
@@ -59,22 +65,55 @@ Button btn1;
     ImageView imageView18;
     ImageView imageView19;
     ImageView imageView20;
+    ImageView imageView = null;
     EditText editText1;
+    ArrayList<Bitmap> bitmaps = new ArrayList<>();
+    String src;
+    ArrayList imageUrls = new ArrayList();
+    ProgressBar progressBar;
+    int imgNum = 0;
+    int selected = 0;
+    Intent intent;
+    Button fetch;
+    MyTask mTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btn1=findViewById(R.id.MoveToGameBtn);
+        gameSound = new GameSound(this);
+        // do bind service
+        doBindService();
+        Intent music = new Intent();
+        music.setClass(this, MusicService.class);
+        startService(music);
+        Button resumeMusic = findViewById(R.id.musicResume0);
+        resumeMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onResumeMusic();
+            }
+        });
+        Button pauseMusic = findViewById(R.id.musicPause0);
+        pauseMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onPauseMusic();
+            }
+        });
+        btn1 = findViewById(R.id.MoveToGameBtn);
         btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(MainActivity.this,MemoryGameActivity.class);
+                gameSound.playCorrectSound();
+                Intent intent = new Intent(MainActivity.this, MemoryGameActivity.class);
                 startActivity(intent);
             }
         });
         editText1 = findViewById(R.id.editText1);
-        editText1.setText("https://pixabay.com/");
+        editText1.setText("https://stocksnap.io");
         progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
         imageView1 = findViewById(R.id.imageView1);
         imageView2 = findViewById(R.id.imageView2);
         imageView3 = findViewById(R.id.imageView3);
@@ -95,24 +134,73 @@ Button btn1;
         imageView18 = findViewById(R.id.imageView18);
         imageView19 = findViewById(R.id.imageView19);
         imageView20 = findViewById(R.id.imageView20);
+        intent = new Intent(MainActivity.this, MemoryGameActivity.class);
         fetch = findViewById(R.id.fetch);
         fetch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String url = editText1.getText().toString();
+                String saveToPath = getFilesDir() + "/relax.jpg";
                 mTask = new MyTask();
-                mTask.execute(editText1.getText().toString());
-
+                mTask.execute(url, saveToPath);
             }
         });
 
+    }
+
+    //music service
+    private boolean mIsBound = false;
+    private MusicService mServ;
+    private ServiceConnection sConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            mServ = ((MusicService.ServiceBinder) binder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServ = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class), sConn, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    void doUnbindService() {
+        if (mIsBound) {
+            unbindService(sConn);
+            mIsBound = false;
+        }
+    }
+
+    protected void onResumeMusic() {
+        super.onResume();
+        if (mServ != null) {
+            mServ.resumeMusic();
+        }
+    }
+
+    protected void onPauseMusic() {
+        super.onPause();
+        mServ.pauseMusic();
+    }
+
+    protected void onDestroyMusic() {
+        super.onDestroy();
+        doUnbindService();
+        Intent music = new Intent();
+        music.setClass(this, MusicService.class);
+        stopService(music);
 
         // For sending jsonObject to server
         // Create a jsonObject
         JSONObject jsonObj = new JSONObject();
-        try{
+        try {
             jsonObj.put("PlayerName", "Hongwei");
-            jsonObj.put("Time",28);
-        }catch (Exception e){
+            jsonObj.put("Time", 28);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // send jsonObj(data) to server
@@ -121,21 +209,22 @@ Button btn1;
 //        requestData();
 
     }
-    private List<String> getImageUrls(String targetUrl){
+
+    /*private List<String> getImageUrls(String targetUrl) {
         try {
-            List<String> imageUrls = new ArrayList<>();
+            imageUrls = new ArrayList<>();
             final Connection connect = Jsoup.connect(targetUrl);
             connect.header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0");
             final Document document = connect.get();
             Elements imgElements = document.select("img[src]");
             int count = 0;
-            for (Element e:
+            for (Element e :
                     imgElements) {
                 if (Pattern.matches(".*?jpe?g|png|git|$", e.attr("src"))) {
                     imageUrls.add(e.attr("src"));
                 }
                 count++;
-                if(count == 20) break;
+                if (count == 20) break;
             }
             return imageUrls;
         } catch (IOException e) {
@@ -144,27 +233,27 @@ Button btn1;
         }
     }
 
-    public Bitmap GetImageInputStream(String imageurl){
+    public Bitmap GetImageInputStream(String imageurl) {
         URL url;
-        HttpURLConnection connection=null;
-        Bitmap bitmap=null;
+        HttpURLConnection connection = null;
+        Bitmap bitmap = null;
         try {
             url = new URL(imageurl);
-            connection=(HttpURLConnection)url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(6000);
             connection.setDoInput(true);
             connection.setUseCaches(false);
-            InputStream inputStream=connection.getInputStream();
-            bitmap= BitmapFactory.decodeStream(inputStream);
+            InputStream inputStream = connection.getInputStream();
+            bitmap = BitmapFactory.decodeStream(inputStream);
             inputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return bitmap;
-    }
+    }*/
 
 
-    protected void sendData(JSONObject data){
+    protected void sendData(JSONObject data) {
         // Need to set "Port: 65332" to your Visual Studio own port number
         Command cmd = new Command(this, "set",
                 "http://10.0.2.2:65332/Home/setPlayer", data);
@@ -172,7 +261,7 @@ Button btn1;
         new AsyncToServer().execute(cmd);
     }
 
-    protected void requestData(){
+    protected void requestData() {
         // Need to set "Port: 65332" to your Visual Studio own port number
         Command cmd = new Command(this, "get",
                 "http://10.0.2.2:65332/Home/getPlayer", null);
@@ -181,96 +270,150 @@ Button btn1;
 
     }
 
-    public void onServerResponse(JSONObject jsonObj){
+    public void onServerResponse(JSONObject jsonObj) {
         int id = 0;
         String name = "";
         int time = 0;
 
-        if (jsonObj == null){
+        if (jsonObj == null) {
             return;
         }
-        try{
-            String context = (String)jsonObj.get("context");
-            if (context.compareTo("get") == 0){
-                id = (int)jsonObj.get("PlayerId");
-                name = (String)jsonObj.get("PlayerName");
-                time = (int)jsonObj.get("Time");
+        try {
+            String context = (String) jsonObj.get("context");
+            if (context.compareTo("get") == 0) {
+                id = (int) jsonObj.get("PlayerId");
+                name = (String) jsonObj.get("PlayerName");
+                time = (int) jsonObj.get("Time");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-    private class MyTask extends AsyncTask<String, Integer, List<Bitmap>> {
+
+    private class MyTask extends AsyncTask<String, Integer, ArrayList<Bitmap>> {
         @Override
         protected void onPreExecute() {
+            super.onPreExecute();
             fetch.setText("fetching...");
             fetch.setEnabled(false);
+            imgNum = 0;
+            bitmaps.clear();
+            imageUrls.clear();
+            selected = 0;
+            progressBar.setVisibility(View.VISIBLE);
         }
 
 
         @Override
-        protected List<Bitmap> doInBackground(String... params) {
+        protected ArrayList<Bitmap> doInBackground(String... params) {
+            long imageLen = 0;
+            long totalSoFar = 0;
+            int readLen = 0;
+            Bitmap bitmap = null;
+
+
             try {
-                List<String> urls = getImageUrls(params[0]);
-                publishProgress(20);
-                List<Bitmap> bitmapList = new ArrayList<>();
-                int count = 0;
-                for (String url:
-                        urls) {
-                    count++;
-                    Bitmap bitmap = GetImageInputStream(url);
-                    String fileName = "image" + count;
-                    File publicPath = Environment.getExternalStorageDirectory();
-                    File file = new File(publicPath,"/" + fileName + ".jpg");
-                    FileOutputStream out = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                    bitmapList.add(bitmap);
-                    out.flush();
-                    out.close();
-                    publishProgress(20 + count * 4);
+
+                Document doc = Jsoup.connect(params[0]).get();
+                Elements img = doc.getElementsByTag("img");
+                for(int i=2; i<22; i++){
+                    Element e = img.get(i);
+                    src = e.absUrl("src");
+                    imageUrls.add(src);
                 }
-                publishProgress(100);
-                return bitmapList;
-            } catch (Exception e) {
+
+                for(String ur: (ArrayList<String>)imageUrls){
+                    URL single_url = new URL(ur);
+                    HttpURLConnection conn = (HttpURLConnection)single_url.openConnection();
+                    conn.connect();
+                    imageLen += conn.getContentLength();
+                }
+
+                for(String ur: (ArrayList<String>)imageUrls){
+                    URL single_url = new URL(ur);
+                    HttpURLConnection conn = (HttpURLConnection)single_url.openConnection();
+                    conn.connect();
+
+                    byte[] data = new byte[1024];
+                    InputStream in = single_url.openStream();
+                    BufferedInputStream bufIn = new BufferedInputStream(in,2048);
+                    OutputStream out = new FileOutputStream(params[1]);
+
+                    while((readLen = bufIn.read(data)) != -1){
+                        totalSoFar += readLen;
+                        out.write(data, 0, readLen);
+
+                        publishProgress((int)((totalSoFar * 100)/imageLen));
+                    }
+
+                    File file = new File(params[1]);
+                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                    bitmaps.add(bitmap);
+                }
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            return bitmaps;
         }
 
         @Override
         protected void onProgressUpdate(Integer... progresses) {
 //            Log.i(TAG, "onProgressUpdate(Progress... progresses) called");
-            progressBar.setProgress(progresses[0]);
+            super.onProgressUpdate(progresses);
+            progressBar.setProgress(Math.round(progresses[0]));
+
+            if(bitmaps != null){
+                if(bitmaps.size() >= imgNum+1){
+                    imgNum++;
+                    imageView = findViewById(getResources().getIdentifier(
+                            "imageView" + imgNum, "id", getPackageName()
+                    ));
+                    imageView.setImageBitmap(bitmaps.get(imgNum-1));
+                    imageView.setTag(R.id.tag_first, imgNum-1);
+
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(view.getTag(R.id.tag_second) == null || view.getTag(R.id.tag_second).toString() != "clicked"){
+                                view.setTag(R.id.tag_second,"clicked");
+                                selected++;
+                                byte[] bytes = bitmap2Bytes(bitmaps.get(Integer.parseInt(String.valueOf(view.getTag(R.id.tag_first)))));
+                                intent.putExtra("img"+selected, bytes);
+                                ImageView imgview = (ImageView)view;
+                                imgview.setBackgroundResource(R.drawable.black);
+                                if(selected >= 6){
+                                    startActivity(intent);
+                                    //finish();
+                                }
+                            }
+                            else{
+                                //view.setTag(null);
+                                intent.removeExtra("img" + selected);
+                                selected--;
+                                ImageView imageview = (ImageView)view;
+                                imageview.setImageBitmap(bitmaps.get(Integer.parseInt(String.valueOf(view.getTag(R.id.tag_first)))));
+                                imageview.setBackground(null);
+                                imageview.setTag(R.id.tag_second,"unclicked");
+                            }
+                        }
+                    });
+                }
+            }
         }
 
         @Override
-        protected void onPostExecute(List<Bitmap> result) {
+        protected void onPostExecute(ArrayList<Bitmap> result) {
 //            Log.i(TAG, "onPostExecute(Result result) called");
+            super.onPostExecute(result);
             fetch.setText("fetched");
-            if(result.size() > 0) imageView1.setImageBitmap(result.get(0));
-            if(result.size() > 1) imageView2.setImageBitmap(result.get(1));
-            if(result.size() > 2) imageView3.setImageBitmap(result.get(2));
-            if(result.size() > 3) imageView4.setImageBitmap(result.get(3));
-            if(result.size() > 4) imageView5.setImageBitmap(result.get(4));
-            if(result.size() > 5) imageView6.setImageBitmap(result.get(5));
-            if(result.size() > 6) imageView7.setImageBitmap(result.get(6));
-            if(result.size() > 7) imageView8.setImageBitmap(result.get(7));
-            if(result.size() > 8) imageView9.setImageBitmap(result.get(8));
-            if(result.size() > 9) imageView10.setImageBitmap(result.get(9));
-            if(result.size() > 10) imageView11.setImageBitmap(result.get(10));
-            if(result.size() > 11) imageView12.setImageBitmap(result.get(11));
-            if(result.size() > 12) imageView13.setImageBitmap(result.get(12));
-            if(result.size() > 13) imageView14.setImageBitmap(result.get(13));
-            if(result.size() > 14) imageView15.setImageBitmap(result.get(14));
-            if(result.size() > 15) imageView16.setImageBitmap(result.get(15));
-            if(result.size() > 16) imageView17.setImageBitmap(result.get(16));
-            if(result.size() > 17) imageView18.setImageBitmap(result.get(17));
-            if(result.size() > 18) imageView19.setImageBitmap(result.get(18));
-            if(result.size() > 19) imageView20.setImageBitmap(result.get(19));
-            if(result.size() < 20){
+            if (result.size() < 20) {
                 fetch.setText("fetch");
                 fetch.setEnabled(true);
+            }
+            if(progressBar != null){
+                progressBar.setVisibility(View.GONE);
             }
         }
 
@@ -279,6 +422,12 @@ Button btn1;
 //            Log.i(TAG, "onCancelled() called");
             fetch.setText("fetch");
             progressBar.setProgress(0);
+        }
+
+        private byte[] bitmap2Bytes(Bitmap bm){
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            return baos.toByteArray();
         }
     }
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Reset"
+        android:id="@+id/resetBtn"/>
+    <item
+        android:title="Pause music"
+        android:id="@+id/musicPause"/>
+    <item
+        android:title="Resume music"
+        android:id="@+id/musicResume"/>
+    <item
+        android:title="Watch ad"
+        android:id="@+id/watchAdv"/>
+    <item
+        android:title="Tutorial"
+        android:id="@+id/watchTut"/>
+
+</menu>
