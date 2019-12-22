@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MatchActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/playername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Finding a suitable name for you"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:layout_weight="1"
+            />
+        <Button
+            android:id="@+id/startButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start the Game"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:clickable="false"
+            android:onClick="onClickStartGame"
+            />
+        <TextView
+            android:id="@+id/opponentname"
+            android:text="No Opponent Found"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
