@@ -23,12 +23,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.team8memorygame.Model.Command;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
-public class MemoryGameActivity extends AppCompatActivity {
+public class MemoryGameActivity extends AppCompatActivity
+        implements AsyncToServer.IServerResponse{
     private GameSound gameSound;
     int watchAdCount=1;
     int scorepts=0;
@@ -411,6 +418,18 @@ public class MemoryGameActivity extends AppCompatActivity {
                     // whereas `apply` will handle it in the background
                     editor.apply();
 
+                    //Create a JSONObject for sending to database
+                    JSONObject saveplayer = new JSONObject();
+
+                    try{
+                        saveplayer.put("PlayerName", name);
+                        saveplayer.put("Time", seconds);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    sendData(saveplayer);
+
                     Toast.makeText(MemoryGameActivity.this, "Saved! Thanks for playing, " + playerName.getText().toString(), Toast.LENGTH_SHORT).show();
                     finish();
                     startActivity(getIntent());
@@ -463,5 +482,34 @@ public class MemoryGameActivity extends AppCompatActivity {
         Intent music=new Intent();
         music.setClass(this,MusicService.class);
         stopService(music);
+    }
+
+    protected void sendData(JSONObject data){
+        // Need to set "Port: 65332" to your Visual Studio own port number
+        Command cmd = new Command(this, "set",
+                "http://10.0.2.2:65332/Home/setPlayer", data);
+
+        new AsyncToServer().execute(cmd);
+    }
+
+    public void onServerResponse(JSONArray jsonArr){
+
+        if (jsonArr == null){
+            return;
+        }
+
+        try {
+            for (int i = 0; i<jsonArr.length(); i++){
+
+                JSONObject obj = jsonArr.getJSONObject(i);
+                String name = obj.getString("PlayerName");
+                int time = obj.getInt("Time");
+                System.out.println(obj);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 }

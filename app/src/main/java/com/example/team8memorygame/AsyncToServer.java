@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import com.example.team8memorygame.Model.Command;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -14,18 +15,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class AsyncToServer extends AsyncTask<Command, Void, JSONObject> {
+public class AsyncToServer extends AsyncTask<Command, Void, JSONArray> {
     IServerResponse callback;
 
     @Override
     protected void onPreExecute(){}
 
     @Override
-    protected JSONObject doInBackground(Command... cmds){
+    protected JSONArray doInBackground(Command... cmds){
         Command cmd = cmds[0];
         this.callback = cmd.getCallBack();
 
         JSONObject jsonObj = null;
+        JSONArray jsonArr = null;
         StringBuilder response = new StringBuilder();
 
         try{
@@ -51,8 +53,20 @@ public class AsyncToServer extends AsyncTask<Command, Void, JSONObject> {
             }
 
             try{
-                jsonObj = new JSONObject(response.toString());
-                jsonObj.put("context", cmd.getContext());
+
+                // return jsonArr
+                jsonArr = new JSONArray(response.toString());
+//                for (int i = 0; i < jsonArr.length(); i++){
+//                    // get individual jsonObj
+//                    jsonObj = jsonArr.getJSONObject(i);
+//                    jsonObj.put("context", cmd.getContext());
+//                    // publish jsonObj to list view
+////                    publishProgress(jsonObj);
+//
+//                }
+
+//                jsonObj = new JSONObject(response.toString());
+//                jsonObj.put("context", cmd.getContext());
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -60,7 +74,7 @@ public class AsyncToServer extends AsyncTask<Command, Void, JSONObject> {
             e.printStackTrace();
         }
 
-        return jsonObj;
+        return jsonArr;
 
 
     }
@@ -69,13 +83,13 @@ public class AsyncToServer extends AsyncTask<Command, Void, JSONObject> {
 //    protected void onProgressUpdate(Void v){}
 
     @Override
-    protected void onPostExecute(JSONObject jsonObj){
-        if (jsonObj != null){
-            this.callback.onServerResponse(jsonObj);
+    protected void onPostExecute(JSONArray jsonArr){
+        if (jsonArr != null){
+            this.callback.onServerResponse(jsonArr);
         }
     }
 
     public interface IServerResponse{
-        void onServerResponse(JSONObject jsonObj);
+        void onServerResponse(JSONArray jsonArr);
     }
 }
