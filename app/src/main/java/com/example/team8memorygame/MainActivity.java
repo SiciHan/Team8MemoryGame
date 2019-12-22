@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity{
     ImageView imageView20;
     ImageView imageView = null;
     EditText editText1;
+    EditText downloading;
     ArrayList<Bitmap> bitmaps = new ArrayList<>();
     String src;
     ArrayList imageUrls = new ArrayList();
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity{
         });
         editText1 = findViewById(R.id.editText1);
         editText1.setText("https://stocksnap.io");
+        downloading = findViewById(R.id.imageDownloading);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
         imageView1 = findViewById(R.id.imageView1);
@@ -205,51 +207,6 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    /*private List<String> getImageUrls(String targetUrl) {
-        try {
-            imageUrls = new ArrayList<>();
-            final Connection connect = Jsoup.connect(targetUrl);
-            connect.header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0");
-            final Document document = connect.get();
-            Elements imgElements = document.select("img[src]");
-            int count = 0;
-            for (Element e :
-                    imgElements) {
-                if (Pattern.matches(".*?jpe?g|png|git|$", e.attr("src"))) {
-                    imageUrls.add(e.attr("src"));
-                }
-                count++;
-                if (count == 20) break;
-            }
-            return imageUrls;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    public Bitmap GetImageInputStream(String imageurl) {
-        URL url;
-        HttpURLConnection connection = null;
-        Bitmap bitmap = null;
-        try {
-            url = new URL(imageurl);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setConnectTimeout(6000);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            InputStream inputStream = connection.getInputStream();
-            bitmap = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bitmap;
-    }*/
-
-
-
-
     private class MyTask extends AsyncTask<String, Integer, ArrayList<Bitmap>> {
         @Override
         protected void onPreExecute() {
@@ -323,9 +280,11 @@ public class MainActivity extends AppCompatActivity{
             super.onProgressUpdate(progresses);
             progressBar.setProgress(Math.round(progresses[0]));
 
+
             if(bitmaps != null){
                 if(bitmaps.size() >= imgNum+1){
                     imgNum++;
+                    downloading.setText("downloading... " + imgNum + "/20");
                     imageView = findViewById(getResources().getIdentifier(
                             "imageView" + imgNum, "id", getPackageName()
                     ));
@@ -374,6 +333,7 @@ public class MainActivity extends AppCompatActivity{
             if(progressBar != null){
                 progressBar.setVisibility(View.GONE);
             }
+            downloading.setText("Completed !");
         }
 
         @Override
