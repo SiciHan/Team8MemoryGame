@@ -464,7 +464,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_VIEW);
 
                 File file=new File(getFilesDir()+"/videos/adv.mp4");
-                Uri uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.memorylogic.provider",file);
+                Uri uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.team8memorygame.provider",file);
                 intent.setDataAndType(uri,"video/*");
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 if(watchAdCount<2){
@@ -481,7 +481,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_VIEW);
 
                 file=new File(getFilesDir()+"/videos/demo.mp4");
-                uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.memorylogic.provider",file);
+                uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.team8memorygame.provider",file);
                 intent.setDataAndType(uri,"video/*");
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(intent);
