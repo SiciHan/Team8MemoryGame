@@ -68,9 +68,9 @@ public class MemoryGameActivity extends AppCompatActivity
         gameSound=new GameSound(this);
          //do bind service
         doBindService();
-        Intent music=new Intent();
-        music.setClass(this,MusicService.class);
-        startService(music);
+//        Intent music=new Intent();
+//        music.setClass(this,MusicService.class);
+        //startService(music);
 
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
