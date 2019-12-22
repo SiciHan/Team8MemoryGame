@@ -362,9 +362,12 @@ public class MemoryGameActivity extends AppCompatActivity {
     }
 
     private void calculateScore(){
-        int multiplier = 1000;
+        int timebonus = (30 - seconds) * 5; // (deduct) 5 points deducted per second
+        int trybonus = (30 - tries) * 10; // (deduct) 10 points per try
+        if(timebonus < 0 ) timebonus = 0;
+        if(trybonus < 0 ) trybonus = 0;
 
-        score = multiplier/seconds/tries;
+        score = timebonus + trybonus;
     }
 
     private void reset(){
