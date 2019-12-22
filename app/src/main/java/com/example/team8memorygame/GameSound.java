@@ -8,12 +8,13 @@ import android.os.Build;
 
 public class GameSound {
     private AudioAttributes audioAttributes;
-    final int soundStreamMax=2;
+    final int soundStreamMax=3;
 
     private static SoundPool soundhit;
     private static int correct; // if two matches
     private static int wrong; // if mismatch
-    MediaPlayer mySong;
+    private static int win;
+
     public GameSound(Context context){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
             audioAttributes=new AudioAttributes.Builder()
@@ -30,6 +31,7 @@ public class GameSound {
         }
         correct =soundhit.load(context,R.raw.correct,1);
         wrong=soundhit.load(context,R.raw.wrong,1);
+        win=soundhit.load(context,R.raw.win,1);
     }
     public void playCorrectSound(){
         soundhit.play(correct,1.0f,1.0f,1,0,1.0f);
@@ -37,6 +39,10 @@ public class GameSound {
     public void playWrongSound(){
         soundhit.play(wrong,1.0f,1.0f,1,0,1.0f);
     }
+    public void playWinSound(){
+        soundhit.play(win,1.0f,1.0f,1,0,1.0f);
+    }
+
 
 }
 
