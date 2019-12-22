@@ -1,6 +1,7 @@
 package com.example.team8memorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,14 +9,18 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.team8memorygame.Model.Command;
 
@@ -203,6 +208,38 @@ public class MainActivity extends AppCompatActivity{
             e.printStackTrace();
         }
 
+    }
+
+    // Create Options Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Inflate the game_menu; adds items to the action bar if it's present
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.LeaderboardBtn3:
+                Intent intent1=new Intent(MainActivity.this,LeaderBoardActivity.class);
+                startActivity(intent1);
+                break;
+            case R.id.MoveToGameBtn3:
+                gameSound.playCorrectSound();
+                Intent intent2 = new Intent(MainActivity.this, MemoryGameActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.musicPause3:
+                onPauseMusic();
+                break;
+            case R.id.musicResume3:
+                onResumeMusic();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     /*private List<String> getImageUrls(String targetUrl) {
