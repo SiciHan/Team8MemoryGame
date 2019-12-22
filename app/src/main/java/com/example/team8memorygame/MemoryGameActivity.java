@@ -299,6 +299,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                             //if the matches equals 6
                             //onClickPause();
                             if(matched == 6){
+                                gameSound.playWinSound();
                                 System.out.println("so smart, you matched 6 pairs in " + seconds + " seconds!");
                                 running = false;
                                 // without the handler below and if we just run resultDialog directly,
