@@ -63,7 +63,7 @@ public class MemoryGameActivity extends AppCompatActivity
 
         // Initialise gameSound
         gameSound=new GameSound(this);
-        // do bind service
+         //do bind service
         doBindService();
         Intent music=new Intent();
         music.setClass(this,MusicService.class);

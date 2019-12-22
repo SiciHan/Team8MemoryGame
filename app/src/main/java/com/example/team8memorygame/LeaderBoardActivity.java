@@ -2,7 +2,12 @@ package com.example.team8memorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -26,9 +31,58 @@ public class LeaderBoardActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leader_board);
 
+
+
         initUI();
         requestData();
 
+    }
+
+    //music service
+    private boolean mIsBound = false;
+    private MusicService mServ;
+    private ServiceConnection sConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            mServ = ((MusicService.ServiceBinder) binder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServ = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class), sConn, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    void doUnbindService() {
+        if (mIsBound) {
+            unbindService(sConn);
+            mIsBound = false;
+        }
+    }
+
+    protected void onResumeMusic() {
+        super.onResume();
+        if (mServ != null) {
+            mServ.resumeMusic();
+        }
+    }
+
+    protected void onPauseMusic() {
+        super.onPause();
+        mServ.pauseMusic();
+    }
+
+    protected void onDestroyMusic() {
+        super.onDestroy();
+        doUnbindService();
+        Intent music = new Intent();
+        music.setClass(this, MusicService.class);
+        stopService(music);
     }
 
     protected void initUI(){

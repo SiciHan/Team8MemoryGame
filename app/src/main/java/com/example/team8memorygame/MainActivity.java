@@ -374,6 +374,7 @@ public class MainActivity extends AppCompatActivity{
                 progressBar.setVisibility(View.GONE);
             }
             downloading.setText("Completed !");
+            gameSound.playDownloadSound();
         }
 
         @Override
