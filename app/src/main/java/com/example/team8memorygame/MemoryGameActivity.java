@@ -31,7 +31,7 @@ import java.util.Locale;
 public class MemoryGameActivity extends AppCompatActivity {
     private GameSound gameSound;
     int watchAdCount=1;
-    int scorepts=0;
+    int advPoints;
     int clicked = 0;
     boolean faceUp = false;
     int lastClicked = -1;
@@ -58,7 +58,6 @@ public class MemoryGameActivity extends AppCompatActivity {
         Intent music=new Intent();
         music.setClass(this,MusicService.class);
         startService(music);
-
         Button resumeMusic=findViewById(R.id.musicResume);
         resumeMusic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,9 +87,9 @@ public class MemoryGameActivity extends AppCompatActivity {
                 intent.setDataAndType(uri,"video/*");
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 if(watchAdCount<2){
-                    int pts=50;
-                    scorepts=scorepts+50;
+                    advPoints=50;
                     watchAdCount=2;
+                    Toast.makeText(MemoryGameActivity.this,"Thanks for watching adv,you have earned "+advPoints+" pts",Toast.LENGTH_LONG).show();
                     // use part to add score pts to ur method
                 }
                 startActivity(intent);
