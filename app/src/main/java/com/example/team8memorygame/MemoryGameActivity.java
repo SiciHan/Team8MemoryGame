@@ -366,6 +366,7 @@ public class MemoryGameActivity extends AppCompatActivity
                     }catch(Exception e){
                         e.printStackTrace();
                     }
+                    sendData(playerData);
 
                     Toast.makeText(MemoryGameActivity.this, "Saved! Thanks for playing, " + playerName.getText().toString(), Toast.LENGTH_SHORT).show();
                     resultDialog.dismiss();

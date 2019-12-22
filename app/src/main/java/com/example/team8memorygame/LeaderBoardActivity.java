@@ -68,11 +68,13 @@ public class LeaderBoardActivity extends AppCompatActivity
         try {
             for (int i = 0; i<jsonArr.length(); i++){
 
+                String name = null;
+                int time = 0;
                 JSONObject obj = jsonArr.getJSONObject(i);
-                String name = obj.getString("PlayerName");
-                int time = obj.getInt("Time");
-                leader[0].setText(name);
-                score[0].setText(time);
+                name = obj.getString("PlayerName");
+                time = obj.getInt("Time");
+                leader[i].setText(name);
+                score[i].setText(Integer.toString(time));
             }
 
         }catch (Exception e){
