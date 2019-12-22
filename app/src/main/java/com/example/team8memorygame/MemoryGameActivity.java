@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,6 +47,8 @@ public class MemoryGameActivity extends AppCompatActivity {
     ImageButton[] buttons=null;
     ArrayList<String> files = null;
     TextView picMatch = null;
+    int score = 0;
+    int tries = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,60 +62,6 @@ public class MemoryGameActivity extends AppCompatActivity {
         Intent music=new Intent();
         music.setClass(this,MusicService.class);
         startService(music);
-        Button resumeMusic=findViewById(R.id.musicResume);
-        resumeMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onResumeMusic();
-            }
-        });
-        Button pauseMusic=findViewById(R.id.musicPause);
-        pauseMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    onPauseMusic();
-            }
-        });
-
-        // watch advertisement
-        Button btnAdv=findViewById(R.id.watchAdv);
-        btnAdv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mServ.pauseMusic();
-                Intent intent=new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-
-                File file=new File(getFilesDir()+"/videos/adv.mp4");
-                Uri uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.team8memorygame.provider",file);
-                intent.setDataAndType(uri,"video/*");
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                if(watchAdCount<2){
-                    advPoints=50;
-                    watchAdCount=2;
-                    Toast.makeText(MemoryGameActivity.this,"Thanks for watching adv,you have earned "+advPoints+" pts",Toast.LENGTH_LONG).show();
-                    // use part to add score pts to ur method
-                }
-                startActivity(intent);
-            }
-        });
-        //watch tut
-        Button btnWatchTut=findViewById(R.id.watchTut);
-        btnWatchTut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mServ.pauseMusic();
-                Intent intent=new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-
-                File file=new File(getFilesDir()+"/videos/demo.mp4");
-                Uri uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.team8memorygame.provider",file);
-                intent.setDataAndType(uri,"video/*");
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(intent);
-            }
-        });
-
 
         if (savedInstanceState != null) {
             seconds = savedInstanceState.getInt("seconds");
@@ -122,17 +72,6 @@ public class MemoryGameActivity extends AppCompatActivity {
         initUI();
         picMatch = findViewById(R.id.picmatches);
         memoryLogic();
-
-        Button reset = findViewById(R.id.resetBtn);
-        reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MemoryGameActivity.this, "When life gets hard, reset" , Toast.LENGTH_SHORT).show();
-
-                finish();
-                startActivity(getIntent());
-            }
-        });
     }
 
     @Override
@@ -286,7 +225,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                     if (clicked == 2 && !buttons[finalI].getTag().toString().equals("cardBack")){
                         buttons[finalI].setClickable(false);
                         faceUp = true;
-
+                        tries++;
                         if (buttons[finalI].getTag().toString().equalsIgnoreCase(buttons[lastClicked].getTag().toString())){
                             buttons[finalI].setClickable(false);
                             buttons[lastClicked].setClickable(false);
@@ -308,6 +247,7 @@ public class MemoryGameActivity extends AppCompatActivity {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
+                                        calculateScore();
                                         resultDialog();
                                     }
                                 });
@@ -354,7 +294,10 @@ public class MemoryGameActivity extends AppCompatActivity {
         // gets the timeScore TextView and sets it according to the seconds int (which has to be parsed into a String or else TextView breaks)
         TextView timeScore = resultView.findViewById(R.id.timeScore);
         System.out.println(timeScore.getText());
-        timeScore.setText(String.valueOf(seconds));
+        if (advPoints == 0)
+            timeScore.setText(String.valueOf(score));
+        else
+            timeScore.setText(score + " + " + advPoints);
 
         final EditText playerName = resultView.findViewById(R.id.playerName);
         System.out.println("current name: " + playerName.getText());
@@ -377,8 +320,7 @@ public class MemoryGameActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(MemoryGameActivity.this, "It's okay, we all give up now and then.." , Toast.LENGTH_SHORT).show();
-                finish();
-                startActivity(getIntent());
+                reset();
             }
         });
 
@@ -402,22 +344,49 @@ public class MemoryGameActivity extends AppCompatActivity {
 
                 // if no errors, this block below will save all the necessary details into Shared Preference / Send to database
                 if(!isError){
-//                    resultDialog.dismiss();
                     SharedPreferences playerPref =  getSharedPreferences("player", MODE_PRIVATE);
                     SharedPreferences.Editor editor = playerPref.edit();
                     editor.putString("name", name);
-                    editor.putInt("score", seconds);
+                    editor.putInt("score", score+advPoints);
                     // Consider using `apply()` instead; `commit` writes its data to persistent storage immediately,
                     // whereas `apply` will handle it in the background
                     editor.apply();
 
                     Toast.makeText(MemoryGameActivity.this, "Saved! Thanks for playing, " + playerName.getText().toString(), Toast.LENGTH_SHORT).show();
-                    finish();
-                    startActivity(getIntent());
+                    resultDialog.dismiss();
+                    reset();
                 }
 
             }
         });
+    }
+
+    private void calculateScore(){
+        int multiplier = 1000;
+
+        score = multiplier/seconds/tries;
+    }
+
+    private void reset(){
+        clicked = 0;
+        faceUp = false;
+        lastClicked = -1;
+        matched = 0;
+        //Number of seconds displayed on the stopwatch.
+        seconds = 0;
+        //Is the stopwatch running?
+        running=true;//once the activity starts, the timer will start
+        initUI();
+        score = 0;
+        tries = 0;
+        picMatch.setText(matched + "/6 matches");
+        if(buttons!=null){
+            for(ImageButton button:buttons){
+                button.setClickable(true);
+                button.setImageResource(R.drawable.code);
+                button.setTag("cardBack");
+            }
+        }
     }
 
     //MusicService
@@ -463,5 +432,61 @@ public class MemoryGameActivity extends AppCompatActivity {
         Intent music=new Intent();
         music.setClass(this,MusicService.class);
         stopService(music);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Inflate the game_menu; adds items to the action bar if it's present
+        getMenuInflater().inflate(R.menu.game_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.resetBtn:
+                reset();
+                Toast.makeText(MemoryGameActivity.this, "When life gets hard, reset" , Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.musicPause:
+                onPauseMusic();
+                break;
+            case R.id.musicResume:
+                onResumeMusic();
+                break;
+            case R.id.watchAdv:
+                mServ.pauseMusic();
+                Intent intent=new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+
+                File file=new File(getFilesDir()+"/videos/adv.mp4");
+                Uri uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.memorylogic.provider",file);
+                intent.setDataAndType(uri,"video/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                if(watchAdCount<2){
+                    advPoints=50;
+                    watchAdCount=2;
+                    Toast.makeText(MemoryGameActivity.this,"Thanks for watching adv,you have earned "+advPoints+" pts",Toast.LENGTH_LONG).show();
+                    // use part to add score pts to ur method
+                }
+                startActivity(intent);
+                break;
+            case R.id.watchTut:
+                mServ.pauseMusic();
+                intent=new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+
+                file=new File(getFilesDir()+"/videos/demo.mp4");
+                uri= FileProvider.getUriForFile(MemoryGameActivity.this,"com.example.memorylogic.provider",file);
+                intent.setDataAndType(uri,"video/*");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+                break;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 }
