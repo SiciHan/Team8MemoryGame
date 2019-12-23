@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity{
                 if (mTask == null){
                     mTask = new MyTask();
                     mTask.execute(url,saveToPath);
-
                 }
                 else{
                     mTask.cancel(true);
