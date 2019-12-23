@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +57,8 @@ public class MemoryGameActivity extends AppCompatActivity
     String playername=null;
     boolean hasWinner=false;
     boolean isWinner=false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,6 +163,33 @@ public class MemoryGameActivity extends AppCompatActivity
     }
 
     protected void initUI(){
+
+//               Intent intent = getIntent();
+//        int num = 6 ;
+//        if(intent != null)
+//        {
+//
+//            byte[] bitArray1 = intent.getByteArrayExtra("img"+num);
+//            bitmap1 = BitmapFactory.decodeByteArray(bitArray1,0,bitArray1.length);
+//            num--;
+//            byte[] bitArray2 = intent.getByteArrayExtra("img"+num);
+//            bitmap2 = BitmapFactory.decodeByteArray(bitArray2,0,bitArray2.length);
+//            num--;
+//            byte[] bitArray3 = intent.getByteArrayExtra("img"+num);
+//            bitmap3 = BitmapFactory.decodeByteArray(bitArray3,0,bitArray3.length);
+//            num--;
+//            byte[] bitArray4 = intent.getByteArrayExtra("img"+num);
+//            bitmap4 = BitmapFactory.decodeByteArray(bitArray4,0,bitArray4.length);
+//            num--;
+//            byte[] bitArray5 = intent.getByteArrayExtra("img"+num);
+//            bitmap5 = BitmapFactory.decodeByteArray(bitArray5,0,bitArray5.length);
+//            num--;
+//            byte[] bitArray6 = intent.getByteArrayExtra("img"+num);
+//            bitmap6 = BitmapFactory.decodeByteArray(bitArray6,0,bitArray6.length);
+//            num--;
+//
+//        }
+
         buttons = new ImageButton[]{
                 findViewById(R.id.Image1),
                 findViewById(R.id.Image2),
@@ -174,37 +205,41 @@ public class MemoryGameActivity extends AppCompatActivity
                 findViewById(R.id.Image12)
         };
 
-        //images list for testing until the 6 images are downloaded into the device from previous activity
-        images = new ArrayList<>();
-        images.add(R.drawable.camel);
-        images.add(R.drawable.fox);
-        images.add(R.drawable.koala);
-        images.add(R.drawable.lion);
-        images.add(R.drawable.monkey);
-        images.add(R.drawable.wolf);
-        images.add(R.drawable.camel);
-        images.add(R.drawable.fox);
-        images.add(R.drawable.koala);
-        images.add(R.drawable.lion);
-        images.add(R.drawable.monkey);
-        images.add(R.drawable.wolf);
+//        //images list for testing until the 6 images are downloaded into the device from previous activity
+//        images = new ArrayList<>();
+//        images.add(R.drawable.camel);
+//        images.add(R.drawable.fox);
+//        images.add(R.drawable.koala);
+//        images.add(R.drawable.lion);
+//        images.add(R.drawable.monkey);
+//        images.add(R.drawable.wolf);
+//        images.add(R.drawable.camel);
+//        images.add(R.drawable.fox);
+//        images.add(R.drawable.koala);
+//        images.add(R.drawable.lion);
+//        images.add(R.drawable.monkey);
+//        images.add(R.drawable.wolf);
+//
+//        Collections.shuffle(images);
 
-        Collections.shuffle(images);
+
 
         files = new ArrayList<>();
-        files.add("image1.jpg");
-        files.add("image2.jpg");
-        files.add("image3.jpg");
-        files.add("image4.jpg");
-        files.add("image5.jpg");
-        files.add("image6.jpg");
-        files.add("image1.jpg");
-        files.add("image2.jpg");
-        files.add("image3.jpg");
-        files.add("image4.jpg");
-        files.add("image5.jpg");
-        files.add("image6.jpg");
+        files.add("image1.png");
+        files.add("image2.png");
+        files.add("image3.png");
+        files.add("image4.png");
+        files.add("image5.png");
+        files.add("image6.png");
+        files.add("image1.png");
+        files.add("image2.png");
+        files.add("image3.png");
+        files.add("image4.png");
+        files.add("image5.png");
+        files.add("image6.png");
+
         Collections.shuffle(files);
+
         if(enablePause==false){
             findViewById(R.id.pause).setVisibility(View.GONE);
             findViewById(R.id.resume).setVisibility(View.GONE);
@@ -221,12 +256,13 @@ public class MemoryGameActivity extends AppCompatActivity
                     System.out.println("Tag: " + buttons[finalI].getTag());
                     String imageName = (String) buttons[finalI].getTag();
                     if (imageName.equals("cardBack") && !faceUp){
-                        buttons[finalI].setImageResource(images.get(finalI));
-                        buttons[finalI].setTag(images.get(finalI).toString());
+
+                    //    buttons[finalI].setImageResource(images.get(finalI));
+                     //   buttons[finalI].setTag(images.get(finalI).toString());
 
                         //uncomment code below to use bitmap images downloaded from previous activity from the phone's internal storage
-                        /*buttons[finalI].setImageBitmap(BitmapFactory.decodeFile(getFilesDir()+"/"+files.get(finalI)));
-                        buttons[finalI].setTag(files.get(finalI));*/
+                        buttons[finalI].setImageBitmap(BitmapFactory.decodeFile(getFilesDir() + "/"+files.get(finalI)));
+                        buttons[finalI].setTag(files.get(finalI).toString());
                         if (clicked == 0) {
                             lastClicked = finalI;
                             System.out.println("Lastclicked tag: " + lastClicked + ", i: " + finalI);

@@ -65,4 +65,8 @@ public class AsyncToServerMultiplayer extends AsyncTask<CommandForMultiplayers,V
         void onServerResponse(JSONObject jsonObject);//do something about the jsonObject returned.
     }
 
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+    }
 }

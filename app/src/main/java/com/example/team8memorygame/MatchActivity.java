@@ -3,6 +3,7 @@ package com.example.team8memorygame;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -21,6 +22,7 @@ public class MatchActivity extends AppCompatActivity implements AsyncToServerMul
     boolean isMatched=false;
     boolean isStart=false;
     Button startBtn;
+    boolean isBackPressed=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +34,7 @@ public class MatchActivity extends AppCompatActivity implements AsyncToServerMul
     @Override
     public void onBackPressed(){
         deregister();
+        isBackPressed=true;
         super.onBackPressed();
         //de-register the player
 
@@ -60,17 +63,21 @@ public class MatchActivity extends AppCompatActivity implements AsyncToServerMul
                     e.printStackTrace();
                 }
                 cmd=new CommandForMultiplayers(MatchActivity.this,"match","http://10.0.2.2:65332/Home/MatchPerson",jsonObject);
-                new AsyncToServerMultiplayer().execute(cmd);
-                if(opponentname.equals(""))
-                    Toast.makeText(MatchActivity.this,"Waiting for your opponent",Toast.LENGTH_LONG).show();
+                AsyncToServerMultiplayer task=new AsyncToServerMultiplayer();
+                task.execute(cmd);
+                if(isBackPressed==true){handler.removeCallbacks(this);}
+                if(opponentname.equals("")){}
+                    //Toast.makeText(MatchActivity.this,"Waiting for your opponent",Toast.LENGTH_LONG).show();
                 else{
                     System.out.println("opponent found");
                     isMatched=true;
-                    //stop the run
 
+                    //stop the run
+                    task.cancel(true);
                     startBtn=(Button)findViewById(R.id.startButton);
                     startBtn.setVisibility(View.VISIBLE);
                     startBtn.setClickable(true);
+
                     handler.removeCallbacks(this);
 
                 }
@@ -93,8 +100,11 @@ public class MatchActivity extends AppCompatActivity implements AsyncToServerMul
                     e.printStackTrace();
                 }
                 cmd = new CommandForMultiplayers(MatchActivity.this, "IsStart", "http://10.0.2.2:65332/Home/IsStart", jsonObject);
-                new AsyncToServerMultiplayer().execute(cmd);
+                AsyncToServerMultiplayer task=new AsyncToServerMultiplayer();
+                task.execute(cmd);
+                if(isBackPressed==true){handler.removeCallbacks(this);}
                 if (isStart == true) {
+                    task.cancel(true);
                     Toast.makeText(MatchActivity.this, "Start your game now", Toast.LENGTH_LONG).show();
                     System.out.println("game started");
                     Intent intent = new Intent(MatchActivity.this, MemoryGameActivity.class);
