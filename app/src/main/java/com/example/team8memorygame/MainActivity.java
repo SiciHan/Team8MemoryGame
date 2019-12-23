@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,17 +33,21 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity{
@@ -268,12 +273,17 @@ public class MainActivity extends AppCompatActivity{
 
             try {
 
-                Document doc = Jsoup.connect(params[0]).get();
+                /*Document doc = Jsoup.connect(params[0]).get();
                 Elements img = doc.getElementsByTag("img");
                 for(int i=2; i<22; i++){
                     Element e = img.get(i);
                     src = e.absUrl("src");
                     imageUrls.add(src);
+                }*/
+
+                ArrayList<String> list_temp = returnImageUrlsFromHtml(URLString(params[0]));
+                for(int i = 6; i<26; i++){
+                    imageUrls.add(list_temp.get(i));
                 }
 
                 for(String ur: (ArrayList<String>)imageUrls){
@@ -384,6 +394,45 @@ public class MainActivity extends AppCompatActivity{
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             return baos.toByteArray();
+        }
+
+        private String URLString(String url) {
+            String str = "";
+            String result = "";
+            try {
+                URL ur = new URL(url);
+                URLConnection conn = ur.openConnection();
+                InputStream is = conn.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+                while (null != (str = br.readLine())) {
+                    result += str;
+                }
+                br.close();
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        private ArrayList<String> returnImageUrlsFromHtml(String html) {
+            ArrayList<String> imageSrcList = new ArrayList<String>();
+            String htmlCode = html;
+            Pattern p = Pattern.compile("<img\\b[^>]*\\bsrc\\b\\s*=\\s*('|\")?([^'\"\n\r\f>]+(\\.jpg|\\.bmp|\\.eps|\\.gif|\\.mif|\\.miff|\\.png|\\.tif|\\.tiff|\\.svg|\\.wmf|\\.jpe|\\.jpeg|\\.dib|\\.ico|\\.tga|\\.cut|\\.pic|\\b)\\b)[^>]*>", Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(htmlCode);
+            String quote = null;
+            String src = null;
+            while (m.find()) {
+                quote = m.group(1);
+                src = (quote == null || quote.trim().length() == 0) ? m.group(2).split("//s+")[0] : m.group(2);
+                imageSrcList.add(src);
+            }
+            if (imageSrcList == null || imageSrcList.size() == 0) {
+                Log.e("imageSrcList", "CAN not find !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                return null;
+            }
+            return imageSrcList;
         }
     }
 
