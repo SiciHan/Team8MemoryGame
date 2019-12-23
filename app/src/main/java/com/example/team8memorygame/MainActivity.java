@@ -1,6 +1,7 @@
 package com.example.team8memorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,14 +9,19 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.team8memorygame.Model.Command;
 
@@ -27,21 +33,24 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MainActivity extends AppCompatActivity
-        implements AsyncToServer.IServerResponse {
+public class MainActivity extends AppCompatActivity{
     Button btn1;
 
     private GameSound gameSound;
@@ -67,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     ImageView imageView20;
     ImageView imageView = null;
     EditText editText1;
+    EditText downloading;
     ArrayList<Bitmap> bitmaps = new ArrayList<>();
     String src;
     ArrayList imageUrls = new ArrayList();
@@ -87,31 +97,11 @@ public class MainActivity extends AppCompatActivity
         Intent music = new Intent();
         music.setClass(this, MusicService.class);
         startService(music);
-        Button resumeMusic = findViewById(R.id.musicResume0);
-        resumeMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onResumeMusic();
-            }
-        });
-        Button pauseMusic = findViewById(R.id.musicPause0);
-        pauseMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onPauseMusic();
-            }
-        });
-        btn1 = findViewById(R.id.MoveToGameBtn);
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gameSound.playCorrectSound();
-                Intent intent = new Intent(MainActivity.this, MemoryGameActivity.class);
-                startActivity(intent);
-            }
-        });
+
+
         editText1 = findViewById(R.id.editText1);
         editText1.setText("https://stocksnap.io");
+        downloading = findViewById(R.id.imageDownloading);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
         imageView1 = findViewById(R.id.imageView1);
@@ -134,7 +124,7 @@ public class MainActivity extends AppCompatActivity
         imageView18 = findViewById(R.id.imageView18);
         imageView19 = findViewById(R.id.imageView19);
         imageView20 = findViewById(R.id.imageView20);
-        intent = new Intent(MainActivity.this, MemoryGameActivity.class);
+        intent = new Intent(MainActivity.this, PlayerModeActivity.class);
         fetch = findViewById(R.id.fetch);
         fetch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,92 +193,32 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // send jsonObj(data) to server
-        sendData(jsonObj);
-        // request for data from server
-//        requestData();
 
     }
 
-    /*private List<String> getImageUrls(String targetUrl) {
-        try {
-            imageUrls = new ArrayList<>();
-            final Connection connect = Jsoup.connect(targetUrl);
-            connect.header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:32.0) Gecko/20100101 Firefox/32.0");
-            final Document document = connect.get();
-            Elements imgElements = document.select("img[src]");
-            int count = 0;
-            for (Element e :
-                    imgElements) {
-                if (Pattern.matches(".*?jpe?g|png|git|$", e.attr("src"))) {
-                    imageUrls.add(e.attr("src"));
-                }
-                count++;
-                if (count == 20) break;
-            }
-            return imageUrls;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+    // Create Options Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Inflate the game_menu; adds items to the action bar if it's present
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
-    public Bitmap GetImageInputStream(String imageurl) {
-        URL url;
-        HttpURLConnection connection = null;
-        Bitmap bitmap = null;
-        try {
-            url = new URL(imageurl);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setConnectTimeout(6000);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            InputStream inputStream = connection.getInputStream();
-            bitmap = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.musicPause3:
+                gameSound.playClickSound();
+                onPauseMusic();
+                break;
+            case R.id.musicResume3:
+                gameSound.playClickSound();
+                onResumeMusic();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return bitmap;
-    }*/
-
-
-    protected void sendData(JSONObject data) {
-        // Need to set "Port: 65332" to your Visual Studio own port number
-        Command cmd = new Command(this, "set",
-                "http://10.0.2.2:65332/Home/setPlayer", data);
-
-        new AsyncToServer().execute(cmd);
-    }
-
-    protected void requestData() {
-        // Need to set "Port: 65332" to your Visual Studio own port number
-        Command cmd = new Command(this, "get",
-                "http://10.0.2.2:65332/Home/getPlayer", null);
-
-        new AsyncToServer().execute(cmd);
-
-    }
-
-    public void onServerResponse(JSONObject jsonObj) {
-        int id = 0;
-        String name = "";
-        int time = 0;
-
-        if (jsonObj == null) {
-            return;
-        }
-        try {
-            String context = (String) jsonObj.get("context");
-            if (context.compareTo("get") == 0) {
-                id = (int) jsonObj.get("PlayerId");
-                name = (String) jsonObj.get("PlayerName");
-                time = (int) jsonObj.get("Time");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        return true;
     }
 
     private class MyTask extends AsyncTask<String, Integer, ArrayList<Bitmap>> {
@@ -315,12 +245,17 @@ public class MainActivity extends AppCompatActivity
 
             try {
 
-                Document doc = Jsoup.connect(params[0]).get();
+                /*Document doc = Jsoup.connect(params[0]).get();
                 Elements img = doc.getElementsByTag("img");
                 for(int i=2; i<22; i++){
                     Element e = img.get(i);
                     src = e.absUrl("src");
                     imageUrls.add(src);
+                }*/
+
+                ArrayList<String> list_temp = returnImageUrlsFromHtml(URLString(params[0]));
+                for(int i = 6; i<26; i++){
+                    imageUrls.add(list_temp.get(i));
                 }
 
                 for(String ur: (ArrayList<String>)imageUrls){
@@ -364,9 +299,11 @@ public class MainActivity extends AppCompatActivity
             super.onProgressUpdate(progresses);
             progressBar.setProgress(Math.round(progresses[0]));
 
+
             if(bitmaps != null){
                 if(bitmaps.size() >= imgNum+1){
                     imgNum++;
+                    downloading.setText("downloading... " + imgNum + "/20");
                     imageView = findViewById(getResources().getIdentifier(
                             "imageView" + imgNum, "id", getPackageName()
                     ));
@@ -415,6 +352,8 @@ public class MainActivity extends AppCompatActivity
             if(progressBar != null){
                 progressBar.setVisibility(View.GONE);
             }
+            downloading.setText("Completed !");
+            gameSound.playDownloadSound();
         }
 
         @Override
@@ -428,6 +367,45 @@ public class MainActivity extends AppCompatActivity
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             return baos.toByteArray();
+        }
+
+        private String URLString(String url) {
+            String str = "";
+            String result = "";
+            try {
+                URL ur = new URL(url);
+                URLConnection conn = ur.openConnection();
+                InputStream is = conn.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+                while (null != (str = br.readLine())) {
+                    result += str;
+                }
+                br.close();
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        private ArrayList<String> returnImageUrlsFromHtml(String html) {
+            ArrayList<String> imageSrcList = new ArrayList<String>();
+            String htmlCode = html;
+            Pattern p = Pattern.compile("<img\\b[^>]*\\bsrc\\b\\s*=\\s*('|\")?([^'\"\n\r\f>]+(\\.jpg|\\.bmp|\\.eps|\\.gif|\\.mif|\\.miff|\\.png|\\.tif|\\.tiff|\\.svg|\\.wmf|\\.jpe|\\.jpeg|\\.dib|\\.ico|\\.tga|\\.cut|\\.pic|\\b)\\b)[^>]*>", Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(htmlCode);
+            String quote = null;
+            String src = null;
+            while (m.find()) {
+                quote = m.group(1);
+                src = (quote == null || quote.trim().length() == 0) ? m.group(2).split("//s+")[0] : m.group(2);
+                imageSrcList.add(src);
+            }
+            if (imageSrcList == null || imageSrcList.size() == 0) {
+                Log.e("imageSrcList", "CAN not find !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                return null;
+            }
+            return imageSrcList;
         }
     }
 
