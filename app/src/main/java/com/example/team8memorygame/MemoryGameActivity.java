@@ -38,7 +38,7 @@ public class MemoryGameActivity extends AppCompatActivity
     int clicked = 0;
     boolean faceUp = false;
     int lastClicked = -1;
-    int matched = 5;
+    int matched = 0;
     //Number of seconds displayed on the stopwatch.
     private int seconds = 0;
     //Is the stopwatch running?
