@@ -92,29 +92,8 @@ public class MainActivity extends AppCompatActivity{
         Intent music = new Intent();
         music.setClass(this, MusicService.class);
         startService(music);
-        Button resumeMusic = findViewById(R.id.musicResume0);
-        resumeMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onResumeMusic();
-            }
-        });
-        Button pauseMusic = findViewById(R.id.musicPause0);
-        pauseMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onPauseMusic();
-            }
-        });
-        btn1 = findViewById(R.id.MoveToGameBtn);
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gameSound.playCorrectSound();
-                Intent intent = new Intent(MainActivity.this, MemoryGameActivity.class);
-                startActivity(intent);
-            }
-        });
+
+
         editText1 = findViewById(R.id.editText1);
         editText1.setText("https://stocksnap.io");
         downloading = findViewById(R.id.imageDownloading);
