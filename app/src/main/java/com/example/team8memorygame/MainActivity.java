@@ -223,16 +223,6 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
-            case R.id.LeaderboardBtn3:
-                gameSound.playClickSound();
-                Intent intent1=new Intent(MainActivity.this,LeaderBoardActivity.class);
-                startActivity(intent1);
-                break;
-            case R.id.MoveToGameBtn3:
-                gameSound.playClickSound();
-                Intent intent2 = new Intent(MainActivity.this, MemoryGameActivity.class);
-                startActivity(intent2);
-                break;
             case R.id.musicPause3:
                 gameSound.playClickSound();
                 onPauseMusic();
