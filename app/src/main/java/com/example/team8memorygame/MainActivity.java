@@ -5,6 +5,7 @@ import androidx.core.content.FileProvider;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
@@ -314,12 +315,31 @@ public class MainActivity extends AppCompatActivity{
                         @Override
                         public void onClick(View view) {
                             if(view.getTag(R.id.tag_second) == null || view.getTag(R.id.tag_second).toString() != "clicked"){
+
                                 view.setTag(R.id.tag_second,"clicked");
                                 selected++;
                                 byte[] bytes = bitmap2Bytes(bitmaps.get(Integer.parseInt(String.valueOf(view.getTag(R.id.tag_first)))));
                                 intent.putExtra("img"+selected, bytes);
                                 ImageView imgview = (ImageView)view;
                                 imgview.setBackgroundResource(R.drawable.black);
+
+                                //save to files
+
+                                ContextWrapper cw = new ContextWrapper(getApplicationContext());
+                                File file = new File("/data/data/com.example.team8memorygame/files/", "image"+ selected + ".png");
+
+                                Log.d("path", file.toString());
+                                FileOutputStream fos = null;
+                                try {
+                                    fos = new FileOutputStream(file);
+                                    bitmaps.get(Integer.parseInt(String.valueOf(view.getTag(R.id.tag_first)))).compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                                    fos.flush();
+                                    fos.close();
+                                } catch (java.io.IOException e) {
+                                    e.printStackTrace();
+                                }
+
+
                                 if(selected >= 6){
                                     startActivity(intent);
                                     //finish();
