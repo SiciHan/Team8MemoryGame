@@ -14,6 +14,8 @@ public class GameSound {
     private static int correct; // if two matches
     private static int wrong; // if mismatch
     private static int win;
+    private static int click;
+    private static int download;
 
     public GameSound(Context context){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
@@ -32,6 +34,8 @@ public class GameSound {
         correct =soundhit.load(context,R.raw.correct,1);
         wrong=soundhit.load(context,R.raw.wrong,1);
         win=soundhit.load(context,R.raw.win,1);
+        click=soundhit.load(context,R.raw.coin,1);
+        download=soundhit.load(context,R.raw.download,1);
     }
     public void playCorrectSound(){
         soundhit.play(correct,1.0f,1.0f,1,0,1.0f);
@@ -39,11 +43,9 @@ public class GameSound {
     public void playWrongSound(){
         soundhit.play(wrong,1.0f,1.0f,1,0,1.0f);
     }
-    public void playWinSound(){
-        soundhit.play(win,1.0f,1.0f,1,0,1.0f);
-    }
-
-
+    public void playWinSound(){ soundhit.play(win,1.0f,1.0f,1,0,1.0f);}
+    public void playClickSound(){ soundhit.play(click,1.0f,1.0f,1,0,1.0f);}
+    public void playDownloadSound(){ soundhit.play(download,1.0f,1.0f,1,0,1.0f);}
 }
 
 

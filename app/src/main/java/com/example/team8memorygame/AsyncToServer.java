@@ -1,5 +1,6 @@
 package com.example.team8memorygame;
 
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 
 import com.example.team8memorygame.Model.Command;
@@ -15,7 +16,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class AsyncToServer extends AsyncTask<Command, Void, JSONArray> {
+public class AsyncToServer extends AsyncTask<Command, Boolean, JSONArray> {
     IServerResponse callback;
 
     @Override
@@ -29,13 +30,15 @@ public class AsyncToServer extends AsyncTask<Command, Void, JSONArray> {
         JSONObject jsonObj = null;
         JSONArray jsonArr = null;
         StringBuilder response = new StringBuilder();
+        boolean failToConnectToServer = false;
 
         try{
             URL url = new URL(cmd.getServerPt());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setConnectTimeout(1000);
 
             // send data
-            if (cmd.getData() != null){
+            if (cmd.getData() != null) {
                 conn.setDoOutput(true);
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
@@ -48,29 +51,21 @@ public class AsyncToServer extends AsyncTask<Command, Void, JSONArray> {
             // receive response
             InputStream inputStream = new BufferedInputStream(conn.getInputStream());
             BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-            for (String line; (line = r.readLine()) != null ;){
+            for (String line; (line = r.readLine()) != null; ) {
                 response.append(line).append('\n');
             }
 
-            try{
-
+            try {
                 // return jsonArr
                 jsonArr = new JSONArray(response.toString());
-//                for (int i = 0; i < jsonArr.length(); i++){
-//                    // get individual jsonObj
-//                    jsonObj = jsonArr.getJSONObject(i);
-//                    jsonObj.put("context", cmd.getContext());
-//                    // publish jsonObj to list view
-////                    publishProgress(jsonObj);
-//
-//                }
 
-//                jsonObj = new JSONObject(response.toString());
-//                jsonObj.put("context", cmd.getContext());
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }catch(Exception e){
+            failToConnectToServer = true;
+            publishProgress(failToConnectToServer);
             e.printStackTrace();
         }
 
@@ -79,8 +74,13 @@ public class AsyncToServer extends AsyncTask<Command, Void, JSONArray> {
 
     }
 
-//    @Override
-//    protected void onProgressUpdate(Void v){}
+    @Override
+    protected void onProgressUpdate(Boolean... b){
+        if (this.callback == null) {
+            return;
+        }
+        this.callback.serverNotFound();
+    }
 
     @Override
     protected void onPostExecute(JSONArray jsonArr){
@@ -91,5 +91,6 @@ public class AsyncToServer extends AsyncTask<Command, Void, JSONArray> {
 
     public interface IServerResponse{
         void onServerResponse(JSONArray jsonArr);
+        void serverNotFound();
     }
 }

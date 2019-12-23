@@ -2,7 +2,16 @@ package com.example.team8memorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -20,6 +29,7 @@ public class LeaderBoardActivity extends AppCompatActivity
 
     TextView[] leader = null;
     TextView[] score = null;
+    Button returnToMainBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +39,61 @@ public class LeaderBoardActivity extends AppCompatActivity
         initUI();
         requestData();
 
+        returnToMainBtn = findViewById(R.id.returnToMainBtn);
+        returnToMainBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LeaderBoardActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    //music service
+    private boolean mIsBound = false;
+    private MusicService mServ;
+    private ServiceConnection sConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder binder) {
+            mServ = ((MusicService.ServiceBinder) binder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServ = null;
+        }
+    };
+
+    void doBindService() {
+        bindService(new Intent(this, MusicService.class), sConn, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+    }
+
+    void doUnbindService() {
+        if (mIsBound) {
+            unbindService(sConn);
+            mIsBound = false;
+        }
+    }
+
+    protected void onResumeMusic() {
+        super.onResume();
+        if (mServ != null) {
+            mServ.resumeMusic();
+        }
+    }
+
+    protected void onPauseMusic() {
+        super.onPause();
+        mServ.pauseMusic();
+    }
+
+    protected void onDestroyMusic() {
+        super.onDestroy();
+        doUnbindService();
+        Intent music = new Intent();
+        music.setClass(this, MusicService.class);
+        stopService(music);
     }
 
     protected void initUI(){
@@ -82,4 +147,26 @@ public class LeaderBoardActivity extends AppCompatActivity
         }
 
     }
+
+    public void serverNotFound(){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setTitle("Oops! Server Not Found!");
+        builder1.setMessage("We can't connect to the server at the moment, please try again...");
+        builder1.setCancelable(false);
+
+        builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Left empty as this will be overriden below for positive button
+                // validation logic goes below
+                Intent intent = new Intent(LeaderBoardActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        AlertDialog alert1 = builder1.create();
+        alert1.show();
+    }
+
 }

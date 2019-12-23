@@ -97,29 +97,8 @@ public class MainActivity extends AppCompatActivity{
         Intent music = new Intent();
         music.setClass(this, MusicService.class);
         startService(music);
-        Button resumeMusic = findViewById(R.id.musicResume0);
-        resumeMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onResumeMusic();
-            }
-        });
-        Button pauseMusic = findViewById(R.id.musicPause0);
-        pauseMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onPauseMusic();
-            }
-        });
-        btn1 = findViewById(R.id.MoveToGameBtn);
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gameSound.playCorrectSound();
-                Intent intent = new Intent(MainActivity.this, MemoryGameActivity.class);
-                startActivity(intent);
-            }
-        });
+
+
         editText1 = findViewById(R.id.editText1);
         editText1.setText("https://stocksnap.io");
         downloading = findViewById(R.id.imageDownloading);
@@ -145,7 +124,7 @@ public class MainActivity extends AppCompatActivity{
         imageView18 = findViewById(R.id.imageView18);
         imageView19 = findViewById(R.id.imageView19);
         imageView20 = findViewById(R.id.imageView20);
-        intent = new Intent(MainActivity.this, MemoryGameActivity.class);
+        intent = new Intent(MainActivity.this, PlayerModeActivity.class);
         fetch = findViewById(R.id.fetch);
         fetch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,19 +207,12 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
-            case R.id.LeaderboardBtn3:
-                Intent intent1=new Intent(MainActivity.this,LeaderBoardActivity.class);
-                startActivity(intent1);
-                break;
-            case R.id.MoveToGameBtn3:
-                gameSound.playCorrectSound();
-                Intent intent2 = new Intent(MainActivity.this, MemoryGameActivity.class);
-                startActivity(intent2);
-                break;
             case R.id.musicPause3:
+                gameSound.playClickSound();
                 onPauseMusic();
                 break;
             case R.id.musicResume3:
+                gameSound.playClickSound();
                 onResumeMusic();
                 break;
             default:
@@ -381,6 +353,7 @@ public class MainActivity extends AppCompatActivity{
                 progressBar.setVisibility(View.GONE);
             }
             downloading.setText("Completed !");
+            gameSound.playDownloadSound();
         }
 
         @Override
