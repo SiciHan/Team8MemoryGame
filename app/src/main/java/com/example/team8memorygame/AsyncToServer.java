@@ -2,6 +2,7 @@ package com.example.team8memorygame;
 
 import android.app.AlertDialog;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.example.team8memorygame.Model.Command;
 
@@ -24,6 +25,7 @@ public class AsyncToServer extends AsyncTask<Command, Boolean, JSONArray> {
 
     @Override
     protected JSONArray doInBackground(Command... cmds){
+        System.out.println("background start");
         Command cmd = cmds[0];
         this.callback = cmd.getCallBack();
 
@@ -35,7 +37,7 @@ public class AsyncToServer extends AsyncTask<Command, Boolean, JSONArray> {
         try{
             URL url = new URL(cmd.getServerPt());
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-            conn.setConnectTimeout(1000);
+            conn.setReadTimeout(5000);
 
             // send data
             if (cmd.getData() != null) {
@@ -63,7 +65,9 @@ public class AsyncToServer extends AsyncTask<Command, Boolean, JSONArray> {
                 e.printStackTrace();
             }
 
-        }catch(Exception e){
+        }
+        catch(Exception e){
+            System.out.println("Server not found");
             failToConnectToServer = true;
             publishProgress(failToConnectToServer);
             e.printStackTrace();
@@ -79,7 +83,7 @@ public class AsyncToServer extends AsyncTask<Command, Boolean, JSONArray> {
         if (this.callback == null) {
             return;
         }
-        this.callback.serverNotFound();
+//        this.callback.serverNotFound();
     }
 
     @Override
@@ -91,6 +95,6 @@ public class AsyncToServer extends AsyncTask<Command, Boolean, JSONArray> {
 
     public interface IServerResponse{
         void onServerResponse(JSONArray jsonArr);
-        void serverNotFound();
+//        void serverNotFound();
     }
 }

@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.team8memorygame.Model.Command;
 
@@ -30,12 +32,33 @@ public class LeaderBoardActivity extends AppCompatActivity
     TextView[] leader = null;
     TextView[] score = null;
     Button returnToMainBtn;
+//    boolean connection = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leader_board);
 
+        //send data to server
+        SharedPreferences playerPref = getSharedPreferences("player",  MODE_PRIVATE);
+        String userName = playerPref.getString("name","");
+        int userScore = playerPref.getInt("score",0);
+        if (!userName.isEmpty() && userScore != 0 ){
+            JSONObject playerData = new JSONObject();
+            try {
+                playerData.put("PlayerName", userName);
+                playerData.put("Time", userScore);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            sendData(playerData);
+        }
+        Toast.makeText(LeaderBoardActivity.this, "Saved! Thanks for playing, " + userName, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
         initUI();
         requestData();
 
@@ -113,7 +136,13 @@ public class LeaderBoardActivity extends AppCompatActivity
         };
     }
 
+    protected void sendData(JSONObject jsonObject){
+        // Need to set "Port: 65332" to your Visual Studio own port number
+        Command cmd = new Command(this, "set",
+                "http://10.0.2.2:65332/Home/setPlayer", jsonObject);
+        new AsyncToServer().execute(cmd);
 
+    }
 
     protected void requestData(){
         // Need to set "Port: 65332" to your Visual Studio own port number
@@ -126,6 +155,7 @@ public class LeaderBoardActivity extends AppCompatActivity
 
     public void onServerResponse(JSONArray jsonArr){
 
+//        connection = true;
         if (jsonArr == null){
             return;
         }
@@ -148,25 +178,23 @@ public class LeaderBoardActivity extends AppCompatActivity
 
     }
 
-    public void serverNotFound(){
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
-        builder1.setTitle("Oops! Server Not Found!");
-        builder1.setMessage("We can't connect to the server at the moment, please try again...");
-        builder1.setCancelable(false);
-
-        builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Left empty as this will be overriden below for positive button
-                // validation logic goes below
-                Intent intent = new Intent(LeaderBoardActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
-        AlertDialog alert1 = builder1.create();
-        alert1.show();
-    }
+//    public void serverNotFound(){
+//        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+//        builder1.setTitle("Oops! Server Not Found!");
+//        builder1.setMessage("We can't connect to the server at the moment, please try again...");
+//        builder1.setCancelable(false);
+//
+//        builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                // Left empty as this will be overriden below for positive button
+//                // validation logic goes below
+//                Intent intent = new Intent(LeaderBoardActivity.this, MainActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//        AlertDialog alert1 = builder1.create();
+//        alert1.show();
+//    }
 
 }

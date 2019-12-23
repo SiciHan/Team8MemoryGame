@@ -29,14 +29,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class MemoryGameActivity extends AppCompatActivity
-    implements AsyncToServer.IServerResponse, AsyncToServerMultiplayer.IServerResponse{
+    implements AsyncToServerMultiplayer.IServerResponse{
     private GameSound gameSound;
     int watchAdCount=1;
     int advPoints;
     int clicked = 0;
     boolean faceUp = false;
     int lastClicked = -1;
-    int matched = 0;
+    int matched = 5;
     //Number of seconds displayed on the stopwatch.
     private int seconds = 0;
     //Is the stopwatch running?
@@ -372,19 +372,11 @@ public class MemoryGameActivity extends AppCompatActivity
                     // whereas `apply` will handle it in the background
                     editor.apply();
 
-                    //send data to server
-                    JSONObject playerData = new JSONObject();
-                    try {
-                        playerData.put("PlayerName", name);
-                        playerData.put("Time", score + advPoints);
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                    sendData(playerData);
-
-                    Toast.makeText(MemoryGameActivity.this, "Saved! Thanks for playing, " + playerName.getText().toString(), Toast.LENGTH_SHORT).show();
                     resultDialog.dismiss();
                     reset();
+
+                    Intent intent = new Intent(MemoryGameActivity.this, LeaderBoardActivity.class);
+                    startActivity(intent);
                 }
 
             }
@@ -527,54 +519,7 @@ public class MemoryGameActivity extends AppCompatActivity
         }
         return true;
     }
-    protected void sendData(JSONObject jsonObject){
-        // Need to set "Port: 65332" to your Visual Studio own port number
-        Command cmd = new Command(this, "set",
-                "http://10.0.2.2:65332/Home/setPlayer", jsonObject);
 
-        new AsyncToServer().execute(cmd);
-
-    }
-
-    public void onServerResponse(JSONArray jsonArr){
-
-        if (jsonArr == null){
-            return;
-        }
-
-        try {
-            for (int i = 0; i<jsonArr.length(); i++){
-
-                JSONObject obj = jsonArr.getJSONObject(i);
-                String name = obj.getString("PlayerName");
-                int time = obj.getInt("Time");
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-    }
-    // Fail to connect to server
-    public void serverNotFound(){
-        android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(this);
-        builder1.setTitle("Oops! Server Not Found!");
-        builder1.setMessage("We can't connect to the server at the moment, please try again...");
-        builder1.setCancelable(false);
-
-        builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Left empty as this will be overriden below for positive button
-                // validation logic goes below
-                Intent intent = new Intent(MemoryGameActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        android.app.AlertDialog alert1 = builder1.create();
-        alert1.show();
-    }
     public void FinishGame(){
         //once move to next page
         //need to remove the game played
