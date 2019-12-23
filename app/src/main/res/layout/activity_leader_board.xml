@@ -94,8 +94,5 @@
                 style="@style/leaderboardTextStyle"
                 android:text="Score 5" />
         </LinearLayout>
-
-
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

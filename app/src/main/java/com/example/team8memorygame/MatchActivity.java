@@ -101,8 +101,10 @@ public class MatchActivity extends AppCompatActivity implements AsyncToServerMul
                     intent.putExtra("playername",playername);
                     intent.putExtra("img6",(byte[])getIntent().getSerializableExtra("img6"));
                     intent.putExtra("enablePause",getIntent().getSerializableExtra("enablePause"));
-                    startActivity(intent);
                     handler.removeCallbacks(this);
+                    startActivity(intent);
+                    finish();
+
                 } else if (isStart == false) {
                     handler.postDelayed(this, 1000);
                 }

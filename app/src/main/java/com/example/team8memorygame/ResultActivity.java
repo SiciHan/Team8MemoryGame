@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class ResultActivity extends AppCompatActivity {
@@ -25,5 +26,10 @@ public class ResultActivity extends AppCompatActivity {
         else {
             textView.setText("Good Game.Your opponent won.");
         }
+    }
+    public void onClickToMain(View v){
+        Intent intent=new Intent(this,MainActivity.class);
+        finish();
+        startActivity(intent);
     }
 }

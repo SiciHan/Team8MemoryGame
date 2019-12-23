@@ -8,8 +8,22 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintBottom_toTopOf="@+id/btn"
+        app:layout_constraintTop_toTopOf="parent"
         android:gravity="center"
         android:textSize="36sp">
     </TextView>
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickToMain"
+        android:text="Go to Main Page"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.2">
+
+    </Button>
 </androidx.constraintlayout.widget.ConstraintLayout>

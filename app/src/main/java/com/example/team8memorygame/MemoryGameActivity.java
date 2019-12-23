@@ -88,6 +88,7 @@ public class MemoryGameActivity extends AppCompatActivity
         super.onPause();
         wasRunning = running;
         running = false;
+        RemoveGame();
     }
     @Override
     protected void onResume() {
@@ -203,9 +204,7 @@ public class MemoryGameActivity extends AppCompatActivity
         files.add("image4.jpg");
         files.add("image5.jpg");
         files.add("image6.jpg");
-
         Collections.shuffle(files);
-
         if(enablePause==false){
             findViewById(R.id.pause).setVisibility(View.GONE);
             findViewById(R.id.resume).setVisibility(View.GONE);
@@ -557,8 +556,8 @@ public class MemoryGameActivity extends AppCompatActivity
 
     }
     public void FinishGame(){
-        //once click on finish
-        //need to set the winner in the server
+        //once move to next page
+        //need to remove the game played
 
         try{
             jsonObject.put("name",playername);//this playername is ""
@@ -569,11 +568,23 @@ public class MemoryGameActivity extends AppCompatActivity
         cmd=new CommandForMultiplayers(this,"finishGame","http://10.0.2.2:65332/Home/FinishGame",jsonObject);
         new AsyncToServerMultiplayer().execute(cmd);
     }
+    public void RemoveGame(){
+        //once click on finish
+        //need to set the winner in the server
+
+        try{
+            jsonObject.put("name",playername);//this playername is ""
+            System.out.println("start game"+jsonObject.toString());//
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        cmd=new CommandForMultiplayers(this,"removeGame","http://10.0.2.2:65332/Home/RemoveGame",jsonObject);
+        new AsyncToServerMultiplayer().execute(cmd);
+    }
     public void gameWinnerListener(){
         //constantly check if the winner is set, if set display message
         try{
             jsonObject.put("name",playername);//this playername is ""
-            System.out.println("start game"+jsonObject.toString());//
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -608,7 +619,11 @@ public class MemoryGameActivity extends AppCompatActivity
             e.printStackTrace();
         }
         if(context.equals("finishGame")){
-            //set has winner to true??? no need
+            //no need
+
+        }
+        if(context.equals("removeGame")){
+            //no need action
 
         }
         else if (context.equals("GetWinner")){
