@@ -555,6 +555,26 @@ public class MemoryGameActivity extends AppCompatActivity
         }
 
     }
+    // Fail to connect to server
+    public void serverNotFound(){
+        android.app.AlertDialog.Builder builder1 = new android.app.AlertDialog.Builder(this);
+        builder1.setTitle("Oops! Server Not Found!");
+        builder1.setMessage("We can't connect to the server at the moment, please try again...");
+        builder1.setCancelable(false);
+
+        builder1.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Left empty as this will be overriden below for positive button
+                // validation logic goes below
+                Intent intent = new Intent(MemoryGameActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        android.app.AlertDialog alert1 = builder1.create();
+        alert1.show();
+    }
     public void FinishGame(){
         //once move to next page
         //need to remove the game played
@@ -657,4 +677,5 @@ public class MemoryGameActivity extends AppCompatActivity
 
 
     }
+
 }
