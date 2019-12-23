@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity
         protected void onPreExecute() {
             super.onPreExecute();
             fetch.setText("fetching...");
-            fetch.setEnabled(false);
+            fetch.setEnabled(true);
             imgNum = 0;
             bitmaps.clear();
             imageUrls.clear();
