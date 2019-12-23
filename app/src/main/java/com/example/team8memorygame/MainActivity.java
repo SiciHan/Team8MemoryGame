@@ -131,8 +131,16 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 String url = editText1.getText().toString();
                 String saveToPath = getFilesDir() + "/relax.jpg";
-                mTask = new MyTask();
-                mTask.execute(url, saveToPath);
+                if (mTask == null){
+                    mTask = new MyTask();
+                    mTask.execute(url,saveToPath);
+
+                }
+                else{
+                    mTask.cancel(true);
+                    mTask = new MyTask();
+                    mTask.execute(url,saveToPath);
+                }
             }
         });
 
